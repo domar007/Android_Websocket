@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("JSON Exception", e.getStackTrace().toString());
                     }
                     //mWebSocketClient.send(text.getText().toString());
+                    //Send json
                     mWebSocketClient.send(json.toString());
                 }
 
