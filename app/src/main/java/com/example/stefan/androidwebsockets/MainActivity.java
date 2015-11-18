@@ -60,11 +60,9 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         Log.i("JSON Exception", e.getStackTrace().toString());
                     }
-                    //mWebSocketClient.send(text.getText().toString());
                     //Send json
                     mWebSocketClient.send(json.toString());
                 }
-
             }
 
             @Override
@@ -86,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
-                //mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
             }
 
             @Override
