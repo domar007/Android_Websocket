@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
                             textChanged = false;
                             text.setText("");
                             JSONObject resultJson = new JSONObject(message);
-                            text.setSelection((int) resultJson.getInt("cursorPos"));
                             text.setText(text.getText() + resultJson.get("text").toString());
+                            text.setSelection(resultJson.getInt("cursorPos"));
                             textChanged = true;
                         } catch (JSONException e) {
                             e.printStackTrace();
