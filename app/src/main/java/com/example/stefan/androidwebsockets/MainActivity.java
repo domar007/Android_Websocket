@@ -9,12 +9,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import java.util.UUID;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,9 +25,11 @@ public class MainActivity extends AppCompatActivity {
 
     private Button button;
     private EditText text;
+    private TextView user;
     private WebSocketClient mWebSocketClient;
     private boolean textChanged = true;
     private JSONObject json;
+    String uuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +39,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+
+        user = (TextView) findViewById(R.id.username);
         button = (Button) findViewById(R.id.send_button);
         text = (EditText) findViewById(R.id.edit_text);
+
         json = new JSONObject();
         connectToWebSocket();
-
+         uuid = UUID.randomUUID().toString();
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mWebSocketClient.send(text.getText().toString());
@@ -53,10 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+
                 if (textChanged) {
                     try {
                         json.put("cursorPos", text.getSelectionStart());
                         json.put("text", text.getText().toString());
+                        json.put("user", uuid);
+
                     } catch (JSONException e) {
                         Log.i("JSON Exception", e.getStackTrace().toString());
                     }
@@ -67,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -84,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
+            //    mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
             }
 
             @Override
@@ -95,13 +107,20 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             textChanged = false;
                             text.setText("");
+
                             JSONObject resultJson = new JSONObject(message);
                             text.setText(text.getText() + resultJson.get("text").toString());
                             text.setSelection(resultJson.getInt("cursorPos"));
-                            textChanged = true;
+
+                                user.setText(resultJson.get("user").toString() + "TYPING");
+                                // text.setText(text.getText() + message );
+
+                                    textChanged = true;
+
                         } catch (JSONException e) {
                             e.printStackTrace();
-                        }
+                       }
+                       // user.setText("ddd");
                     }
                 });
             }
