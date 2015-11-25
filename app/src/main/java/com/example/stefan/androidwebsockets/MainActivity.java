@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private void connectToWebSocket() {
         URI uri;
         try {
-            uri = new URI("ws://10.0.2.2:8080");
+            uri = new URI("ws://10.0.3.2:8080");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
