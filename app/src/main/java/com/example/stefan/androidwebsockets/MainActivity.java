@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean textChanged = true;
     private JSONObject json;
     String uuid;
+    String value;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +41,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
 
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null) {
+            value = extras.getString("username");
+        }
+
         user = (TextView) findViewById(R.id.username);
         button = (Button) findViewById(R.id.send_button);
         text = (EditText) findViewById(R.id.edit_text);
 
         json = new JSONObject();
         connectToWebSocket();
-         uuid = UUID.randomUUID().toString();
+        // uuid = UUID.randomUUID().toString();
+        uuid = value ;
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mWebSocketClient.send(text.getText().toString());
