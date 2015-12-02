@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
@@ -84,9 +86,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+               // Toast.makeText(getApplicationContext(), "STRING MESSAGE", 1000).show();
+              //  user.setText("ddd");
             }
         });
+
     }
 
     private void connectToWebSocket() {
@@ -119,17 +123,18 @@ public class MainActivity extends AppCompatActivity {
                             text.setText(text.getText() + resultJson.get("text").toString());
                             text.setSelection(resultJson.getInt("cursorPos"));
 
-                                user.setText(resultJson.get("user").toString() + "TYPING");
-                                // text.setText(text.getText() + message );
+                            user.setText(resultJson.get("user").toString() + "TYPING");
+                            // text.setText(text.getText() + message );
 
-                                    textChanged = true;
+                            textChanged = true;
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                       }
-                       // user.setText("ddd");
+                        }
+                      //  user.setText("ddd");
                     }
                 });
+
             }
 
             @Override

@@ -13,7 +13,7 @@ import android.content.Intent;
 public class LoginActivity  extends AppCompatActivity {
 
     private EditText mUsernameView;
-
+    private EditText mPasswordView;
     private String mUsername;
 
     @Override
@@ -22,6 +22,7 @@ public class LoginActivity  extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mUsernameView = (EditText) findViewById(R.id.username_input);
+        mPasswordView = (EditText) findViewById(R.id.password_input);
         Button signInButton = (Button) findViewById(R.id.login_button);
 
 
@@ -30,7 +31,7 @@ public class LoginActivity  extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 String username = mUsernameView.getText().toString().trim();
-                Intent activityChangeIntent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent activityChangeIntent = new Intent(LoginActivity.this, ProjekteActivity.class);
                 activityChangeIntent.putExtra("username", username);
                 // currentContext.startActivity(activityChangeIntent);
 
@@ -40,6 +41,7 @@ public class LoginActivity  extends AppCompatActivity {
 
 
     }
+
 
 
 }
