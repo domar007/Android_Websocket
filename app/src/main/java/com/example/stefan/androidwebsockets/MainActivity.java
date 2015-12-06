@@ -1,23 +1,19 @@
 package com.example.stefan.androidwebsockets;
 
-import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import java.util.UUID;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,12 +29,16 @@ public class MainActivity extends AppCompatActivity {
     String uuid;
     String value;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
     }
+
+
 
     private void init() {
 
@@ -48,18 +48,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         user = (TextView) findViewById(R.id.username);
-        button = (Button) findViewById(R.id.send_button);
         text = (EditText) findViewById(R.id.edit_text);
 
         json = new JSONObject();
         connectToWebSocket();
         // uuid = UUID.randomUUID().toString();
-        uuid = value ;
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mWebSocketClient.send(text.getText().toString());
-            }
-        });
+        uuid = value;
+
 
         text.addTextChangedListener(new TextWatcher() {
             @Override
@@ -82,12 +77,31 @@ public class MainActivity extends AppCompatActivity {
                     //Send json
                     mWebSocketClient.send(json.toString());
                 }
+
+               // handler.removeCallbacks(task);
+              //  handler.post(task);
+                Log.i("im writing right now!!",text.getText().toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                Log.i("im stopping now!!!!!!","");
                // Toast.makeText(getApplicationContext(), "STRING MESSAGE", 1000).show();
               //  user.setText("ddd");
+
+                final Handler handler = new Handler();
+
+                Runnable task = new Runnable() {
+                    @Override
+                    public void run() {
+
+                        //   handler.postDelayed(this, 2000);
+                        user.setText("");
+                    }
+                };
+                handler.postDelayed(task, 1000);
+
+
             }
         });
 
@@ -123,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                             text.setText(text.getText() + resultJson.get("text").toString());
                             text.setSelection(resultJson.getInt("cursorPos"));
 
-                            user.setText(resultJson.get("user").toString() + "TYPING");
+                            user.setText(resultJson.get("user").toString() + " is typing");
                             // text.setText(text.getText() + message );
 
                             textChanged = true;
