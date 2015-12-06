@@ -12,41 +12,18 @@
         android:layout_gravity="center"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/username_input"
+        <Spinner
+            android:id="@+id/osversions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:imeActionId="@+id/login"
-            android:hint="Username"
-            android:imeOptions="actionUnspecified"
-            android:inputType="textPersonName"
-            android:maxLength="14"
-            android:maxLines="1"
-            android:singleLine="true" />
-
-        <EditText
-            android:id="@+id/password_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:imeActionId="@+id/password"
-
-            android:imeOptions="actionUnspecified"
-            android:inputType="textPersonName"
-            android:maxLength="14"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:password="true" />
-
-
+            android:layout_marginTop="10dp" />
         <Button
             android:id="@+id/login_button"
             style="?android:textAppearanceSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="login"
+            android:text="confirm"
             android:textStyle="bold"/>
 
     </LinearLayout>

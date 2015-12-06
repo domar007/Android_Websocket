@@ -21,6 +21,10 @@
 
         </activity>
 
+        <activity android:name=".ProjekteActivity" >
+
+        </activity>
+
     </application>
 
 </manifest>
