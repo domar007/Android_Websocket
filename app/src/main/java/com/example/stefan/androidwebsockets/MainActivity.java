@@ -1,13 +1,18 @@
 package com.example.stefan.androidwebsockets;
 
-import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import org.java_websocket.client.WebSocketClient;
@@ -17,18 +22,22 @@ import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Random;
+import java.util.UUID;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private Button button;
-    private EditText text;
+    private AutoCompleteTextView text;
     private TextView user;
     private WebSocketClient mWebSocketClient;
     private boolean textChanged = true;
     private JSONObject json;
-    String uuid;
-    String value;
-
+    private int stringStartPosition, stringEndPosition, stringEndPositionBefore, color;
+    private String stringText, stringEditMethod, uuid, value;
+    public static final String ADD = "add";
+    public static final String REPLACE = "replace";
+    public static final String DELETE = "delete";
 
 
     @Override
@@ -38,24 +47,25 @@ public class MainActivity extends Activity {
         init();
     }
 
-
-
     private void init() {
-
         Bundle extras = getIntent().getExtras();
-        if(extras !=null) {
+        if (extras != null) {
             value = extras.getString("username");
         }
 
         user = (TextView) findViewById(R.id.username);
-        text = (EditText) findViewById(R.id.edit_text);
+        text = (AutoCompleteTextView) findViewById(R.id.autocomplete_text_view);
+        String[] autocompleteList = getResources().getStringArray(R.array.autocomplete_list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, autocompleteList);
+        text.setAdapter(adapter);
 
         json = new JSONObject();
+        uuid = UUID.randomUUID().toString();
+        color = generateRandomColor();
+        text.setTextColor(color);
         connectToWebSocket();
-        // uuid = UUID.randomUUID().toString();
-        uuid = value;
 
-
+        // Add event listener
         text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -64,38 +74,49 @@ public class MainActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                 if (textChanged) {
-                    try {
-                        json.put("cursorPos", text.getSelectionStart());
-                        json.put("text", text.getText().toString());
-                        json.put("user", uuid);
+                    stringStartPosition = start;
+                    String hexColorValue = convertIntColorToHexColor(color);
+                    if ((before == 0) && (count >= 1)) {
+                        stringEditMethod = ADD;
+                        stringEndPosition = stringStartPosition + count;
+                        stringText = text.getText().toString().substring(stringStartPosition, stringEndPosition);
+                    } else if ((count > 0) && (before > 0)) {
+                        stringEndPosition = stringStartPosition + count;
+                        stringEndPositionBefore = stringStartPosition + before;
+                        stringText = text.getText().toString().substring(stringStartPosition, stringEndPosition);
+                        stringEditMethod = REPLACE;
+                    } else {
+                        stringEndPosition = stringStartPosition + before;
+                        stringEditMethod = DELETE;
+                    }
 
+                    try {
+                        json.put("uuid", uuid);
+                        json.put("user", value);
+                        json.put("editMethod", stringEditMethod);
+                        json.put("startPos", stringStartPosition);
+                        json.put("endPos", stringEndPosition);
+                        json.put("endPosBefore", stringEndPositionBefore);
+                        json.put("textColor", hexColorValue);
+                        json.put("text", stringText);
                     } catch (JSONException e) {
                         Log.i("JSON Exception", e.getStackTrace().toString());
                     }
+
                     //Send json
                     mWebSocketClient.send(json.toString());
                 }
-
-               // handler.removeCallbacks(task);
-              //  handler.post(task);
-                Log.i("im writing right now!!",text.getText().toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.i("im stopping now!!!!!!","");
-               // Toast.makeText(getApplicationContext(), "STRING MESSAGE", 1000).show();
-              //  user.setText("ddd");
 
                 final Handler handler = new Handler();
 
                 Runnable task = new Runnable() {
                     @Override
                     public void run() {
-
-                        //   handler.postDelayed(this, 2000);
                         user.setText("");
                     }
                 };
@@ -120,7 +141,6 @@ public class MainActivity extends Activity {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
-            //    mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
             }
 
             @Override
@@ -131,21 +151,31 @@ public class MainActivity extends Activity {
                     public void run() {
                         try {
                             textChanged = false;
-                            text.setText("");
-
                             JSONObject resultJson = new JSONObject(message);
-                            text.setText(text.getText() + resultJson.get("text").toString());
-                            text.setSelection(resultJson.getInt("cursorPos"));
-
+                            String userId = resultJson.getString("uuid");
+                            if (!userId.equals(uuid)) {
+                                String editMethod = resultJson.getString("editMethod");
+                                int startPos = resultJson.getInt("startPos");
+                                int endPos = resultJson.getInt("endPos");
+                                int textColor = convertHexColorToIntColor(resultJson.getString("textColor"));
+                                String resultText = resultJson.getString("text");
+                                Spannable span = new SpannableString(resultText);
+                                span.setSpan(new ForegroundColorSpan(textColor), 0, span.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                if (editMethod.equals(ADD)) {
+                                    text.getText().insert(startPos, span);
+                                } else if (editMethod.equals(REPLACE)) {
+                                    int endPosBefore = resultJson.getInt("endPosBefore");
+                                    text.getText().replace(startPos, endPosBefore, span);
+                                } else if (editMethod.equals(DELETE)) {
+                                    text.getText().replace(startPos, endPos, "");
+                                }
+                            }
                             user.setText(resultJson.get("user").toString() + " is typing");
-                            // text.setText(text.getText() + message );
-
                             textChanged = true;
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                      //  user.setText("ddd");
                     }
                 });
 
@@ -162,5 +192,35 @@ public class MainActivity extends Activity {
             }
         };
         mWebSocketClient.connect();
+    }
+
+    /**
+     * Generates random integer color value
+     * @return
+     */
+    private int generateRandomColor(){
+        Random rnd = new Random();
+        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        return color;
+    }
+
+    /**
+     * Convert integer color value to hexadecimal color value
+     * @param intColor
+     * @return
+     */
+    private String convertIntColorToHexColor(int intColor){
+        String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
+        return hexColor;
+    }
+
+    /**
+     * Convert hexadecimal color value to integer color value
+     * @param hexColor
+     * @return
+     */
+    private int convertHexColorToIntColor(String hexColor){
+        int intColor = Color.parseColor(hexColor);
+        return intColor;
     }
 }
