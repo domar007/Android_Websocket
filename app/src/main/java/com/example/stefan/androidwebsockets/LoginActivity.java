@@ -1,30 +1,41 @@
 package com.example.stefan.androidwebsockets;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 
 /**
  * Created by waelgabsi on 26.11.15.
  */
-public class LoginActivity  extends AppCompatActivity {
+public class LoginActivity  extends Activity {
+    private final static String CONTENT_TYPE_JSON = "application/json";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
     private String mUsername;
     ProgressDialog prgDialog;
+    String username;
+    String password;
+    String errorCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,35 +45,39 @@ public class LoginActivity  extends AppCompatActivity {
         mUsernameView = (EditText) findViewById(R.id.username_input);
         mPasswordView = (EditText) findViewById(R.id.password_input);
         Button signInButton = (Button) findViewById(R.id.login_button);
-
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginUser();
+                username = mUsernameView.getText().toString();
+                password = mPasswordView.getText().toString();
+                new LongRunningGetIO().execute(username,password);
+            }
+        });
 
         prgDialog = new ProgressDialog(this);
         // Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
-        
+
 
 
     }
 
-    public void loginUser(View view){
+    public void loginUser(){
         // Get Email Edit View Value
         String email = mUsernameView.getText().toString();
         // Get Password Edit View Value
         String password = mPasswordView.getText().toString();
         // Instantiate Http Request Param Object
-        RequestParams params = new RequestParams();
+
         // When Email Edit View and Password Edit View have values other than Null
         if(Utility.isNotNull(email) && Utility.isNotNull(password)){
             // When Email entered is Valid
             if(Utility.validate(email)){
                 // Put Http parameter username with value of Email Edit View control
-                params.put("username", email);
-                // Put Http parameter password with value of Password Edit Value control
-                params.put("password", password);
-                // Invoke RESTful Web Service with Http parameters
-                invokeWS(params);
+                prgDialog.show();
             }
             // When Email is invalid
             else{
@@ -76,64 +91,81 @@ public class LoginActivity  extends AppCompatActivity {
 
     }
 
-    /**
-     * Method that performs RESTful webservice invocations
-     *
-     * @param params
-     */
-    public void invokeWS(RequestParams params){
-        // Show Progress Dialog
-        prgDialog.show();
-        // Make RESTful webservice call using AsyncHttpClient object
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://alpha.taskql.com/rest/api/1/taskql/login",params ,new AsyncHttpResponseHandler() {
-            // When the response returned by REST has Http response code '200'
-            @Override
-            public void onSuccess(String response) {
-                // Hide Progress Dialog
-                prgDialog.hide();
-                try {
-                    // JSON Object
-                    JSONObject obj = new JSONObject(response);
-                    // When the JSON response has status boolean value assigned with true
-                    if(obj.getString("errorCode").equals("0")) {
-                        Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
-                        // Navigate to Home screen
-                        navigatetoHomeActivity();
-                    }
-                    // Else display error message
-                    else{
-                        //errorMsg.setText(obj.getString("error_msg"));
-                        Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
-                    }
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
 
+
+    private class LongRunningGetIO extends AsyncTask<String, Void, String> {
+
+
+        protected String doInBackground(String... params) {
+
+            String username = params[0];
+            String password = params[1];
+            HttpClient httpClient = new DefaultHttpClient();
+            // Post request
+            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/taskql/login");
+            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
+            // Convert value strings to json object
+            JSONObject json = new JSONObject();
+            try {
+                json.put("username", username); //wgabsi88@gmail.com
+                json.put("password", password); //5B5F-7CC4-4C2E
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //json.put("token", token);
+            // Pass json object to string entity
+            StringEntity entity = null;
+            try {
+                entity = new StringEntity(json.toString());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            // Add entity to post request
+            httpPost.setEntity(entity);
+            // Execute request and handle response
+            HttpResponse resp = null;
+            try {
+                resp = httpClient.execute(httpPost);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String serverResponse = null;
+            try {
+                serverResponse = EntityUtils.toString(resp.getEntity());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return serverResponse;
+            //	return text;
+        }
+
+
+
+        protected void onPostExecute(String results) {
+            prgDialog.hide();
+            if (results!=null) {
+
+                JSONObject arr = null;
+                try {
+                    arr = new JSONObject(results);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    errorCode = arr.getString("errorCode");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if(errorCode.equals("0"))
+                {
+                    navigatetoHomeActivity();
                 }
             }
-            // When the response returned by REST has Http response code other than '200'
-            @Override
-            public void onFailure(int statusCode, Throwable error,
-                                  String content) {
-                // Hide Progress Dialog
-                prgDialog.hide();
-                // When Http response code is '404'
-                if(statusCode == 404){
-                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code is '500'
-                else if(statusCode == 500){
-                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code other than 404, 500
-                else{
-                    Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+
+        }
     }
+
 
     /**
      * Method which navigates from Login Activity to Home Activity

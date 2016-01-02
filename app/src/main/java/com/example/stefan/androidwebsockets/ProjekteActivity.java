@@ -3,18 +3,17 @@
  */
 package com.example.stefan.androidwebsockets;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
 
-public class ProjekteActivity extends AppCompatActivity implements OnItemSelectedListener {
+public class ProjekteActivity extends Activity implements OnItemSelectedListener {
     Spinner spinnerOsversions;
     private String[] state = { "Projekt1", "projekt2", "projekt3", "projekt4",
             "projekt5" };

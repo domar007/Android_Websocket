@@ -1,8 +1,8 @@
 package com.example.stefan.androidwebsockets;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private Button button;
     private EditText text;
