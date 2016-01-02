@@ -1,9 +1,9 @@
 package com.example.stefan.androidwebsockets;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private Button button;
     private AutoCompleteTextView text;
