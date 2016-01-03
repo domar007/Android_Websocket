@@ -171,7 +171,9 @@ public class LoginActivity  extends Activity {
      * Method which navigates from Login Activity to Home Activity
      */
     public void navigatetoHomeActivity(){
+        String username = mUsernameView.getText().toString().trim();
         Intent homeIntent = new Intent(getApplicationContext(),ProjekteActivity.class);
+        homeIntent.putExtra("username", username);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(homeIntent);
     }

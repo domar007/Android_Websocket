@@ -44,11 +44,8 @@ public class ProjekteActivity extends Activity implements OnItemSelectedListener
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
-            //    String username = mUsernameView.getText().toString().trim();
                 Intent activityChangeIntent = new Intent(ProjekteActivity.this, MainActivity.class);
                 activityChangeIntent.putExtra("username", value);
-                // currentContext.startActivity(activityChangeIntent);
-
                 ProjekteActivity.this.startActivity(activityChangeIntent);
             }
         });
