@@ -14,11 +14,10 @@
         android:id="@+id/username"
         />
 
-    <AutoCompleteTextView
-        android:id="@+id/autocomplete_text_view"
+    <EditText
+        android:id="@+id/task_textfield"
         android:layout_width="match_parent"
         android:layout_height="700px"
         android:layout_below="@id/username"
-        android:inputType="textAutoComplete"
-    />
+        />
 </RelativeLayout>
