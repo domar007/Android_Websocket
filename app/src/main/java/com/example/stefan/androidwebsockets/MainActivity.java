@@ -10,9 +10,7 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.java_websocket.client.WebSocketClient;
@@ -27,8 +25,7 @@ import java.util.UUID;
 
 public class MainActivity extends Activity {
 
-    private Button button;
-    private AutoCompleteTextView text;
+    private EditText text;
     private TextView user;
     private WebSocketClient mWebSocketClient;
     private boolean textChanged = true;
@@ -54,10 +51,7 @@ public class MainActivity extends Activity {
         }
 
         user = (TextView) findViewById(R.id.username);
-        text = (AutoCompleteTextView) findViewById(R.id.autocomplete_text_view);
-        String[] autocompleteList = getResources().getStringArray(R.array.autocomplete_list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, autocompleteList);
-        text.setAdapter(adapter);
+        text = (EditText) findViewById(R.id.task_textfield);
 
         json = new JSONObject();
         uuid = UUID.randomUUID().toString();
