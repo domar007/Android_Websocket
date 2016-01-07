@@ -109,7 +109,7 @@ public class LoginActivity  extends Activity {
             // Convert value strings to json object
             JSONObject json = new JSONObject();
             try {
-                json.put("username", username); //wgabsi88@gmail.com
+                json.put("username", username); //
                 json.put("password", password); //5B5F-7CC4-4C2E AC84-B443-468A
             } catch (JSONException e) {
                 e.printStackTrace();
