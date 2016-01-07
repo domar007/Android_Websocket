@@ -1,19 +1,16 @@
 package com.example.stefan.androidwebsockets;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 import org.java_websocket.client.WebSocketClient;
@@ -26,9 +23,8 @@ import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
-    private Button button;
     private EditText text;
     private TextView user;
     private WebSocketClient mWebSocketClient;
