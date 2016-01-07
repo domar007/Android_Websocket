@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ public class LoginActivity  extends Activity {
     String username;
     String password;
     String errorCode;
+    String Session_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,13 +104,13 @@ public class LoginActivity  extends Activity {
             String password = params[1];
             HttpClient httpClient = new DefaultHttpClient();
             // Post request
-            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/taskql/login");
+            HttpPost httpPost = new HttpPost("http://alpha.taskql.com/rest/api/1/taskql/login");
             httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
             // Convert value strings to json object
             JSONObject json = new JSONObject();
             try {
                 json.put("username", username); //wgabsi88@gmail.com
-                json.put("password", password); //5B5F-7CC4-4C2E
+                json.put("password", password); //5B5F-7CC4-4C2E AC84-B443-468A
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -145,21 +147,31 @@ public class LoginActivity  extends Activity {
             prgDialog.hide();
             if (results!=null) {
 
+                Log.w("myApp", "1");
                 JSONObject arr = null;
+                Log.w("myApp", "2");
                 try {
                     arr = new JSONObject(results);
+                    Log.w("myApp", "3");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 try {
+                    Log.w("myApp", "4");
                     errorCode = arr.getString("errorCode");
+                    Session_id = arr.getString("nanomeSessionId");
+                    Toast.makeText(getApplicationContext(), Session_id, Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 if(errorCode.equals("0"))
                 {
-                    navigatetoHomeActivity();
+                    navigatetoHomeActivity(Session_id);
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "username or password not correct", Toast.LENGTH_LONG).show();
+
                 }
             }
 
@@ -170,10 +182,11 @@ public class LoginActivity  extends Activity {
     /**
      * Method which navigates from Login Activity to Home Activity
      */
-    public void navigatetoHomeActivity(){
+    public void navigatetoHomeActivity(String sessionId){
         String username = mUsernameView.getText().toString().trim();
         Intent homeIntent = new Intent(getApplicationContext(),ProjekteActivity.class);
         homeIntent.putExtra("username", username);
+        homeIntent.putExtra("sessionId", sessionId);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(homeIntent);
     }
