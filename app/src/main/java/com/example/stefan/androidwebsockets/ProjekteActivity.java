@@ -4,6 +4,7 @@
 package com.example.stefan.androidwebsockets;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -62,9 +63,9 @@ public class ProjekteActivity extends Activity implements OnItemSelectedListener
             public void onClick(View v) {
                 new LongRunningGetIO().execute(nanome_session);
                 // Perform action on click
-               // Intent activityChangeIntent = new Intent(ProjekteActivity.this, MainActivity.class);
-             //   activityChangeIntent.putExtra("username", value);
-             //   ProjekteActivity.this.startActivity(activityChangeIntent);
+                Intent activityChangeIntent = new Intent(ProjekteActivity.this, MainActivity.class);
+                activityChangeIntent.putExtra("username", value);
+                ProjekteActivity.this.startActivity(activityChangeIntent);
             }
         });
 

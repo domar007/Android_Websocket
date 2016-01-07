@@ -104,7 +104,7 @@ public class LoginActivity  extends Activity {
             String password = params[1];
             HttpClient httpClient = new DefaultHttpClient();
             // Post request
-            HttpPost httpPost = new HttpPost("http://alpha.taskql.com/rest/api/1/taskql/login");
+            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/taskql/login");
             httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
             // Convert value strings to json object
             JSONObject json = new JSONObject();
