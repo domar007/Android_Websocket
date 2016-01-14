@@ -25,13 +25,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjekteActivity extends Activity {
+public class SubprojectActivity extends Activity {
     private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private List<JSONObject> projects = new ArrayList<JSONObject>();
     private List<String> projectNames = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
-    private GetProjectsTask getProjectsTask;
+    private GetSubProjectsTask getSubProjectsTask;
     private ListView listView;
     String value;
     String nanomeSessionId;
@@ -53,18 +53,17 @@ public class ProjekteActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    int projectId = projects.get(position).getInt("id");
-                    navigateToSubprojectActivity(nanomeSessionId, projectId);
+                    Toast.makeText(getApplicationContext(), projects.get(position).getString("title"), Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        getProjectsTask = new GetProjectsTask();
-        getProjectsTask.execute(nanomeSessionId);
+        getSubProjectsTask = new GetSubProjectsTask();
+        getSubProjectsTask.execute(nanomeSessionId);
     }
 
-    private class GetProjectsTask extends AsyncTask<String, Void, String> {
+    private class GetSubProjectsTask extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
             String sessionId = params[0];
@@ -105,13 +104,5 @@ public class ProjekteActivity extends Activity {
                 }
             }
         }
-    }
-
-    private void navigateToSubprojectActivity(String sessionId, int projectId){
-        Intent subprojectIntent = new Intent(getApplicationContext(),SubprojectActivity.class);
-        subprojectIntent.putExtra("projectId", projectId);
-        subprojectIntent.putExtra("sessionId", sessionId);
-        subprojectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(subprojectIntent);
     }
 }
