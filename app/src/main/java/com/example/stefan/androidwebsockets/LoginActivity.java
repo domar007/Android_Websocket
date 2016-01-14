@@ -184,7 +184,7 @@ public class LoginActivity  extends Activity {
      */
     public void navigatetoHomeActivity(String sessionId){
         String username = mUsernameView.getText().toString().trim();
-        Intent homeIntent = new Intent(getApplicationContext(),ProjekteActivity.class);
+        Intent homeIntent = new Intent(getApplicationContext(),ProjectActivity.class);
         homeIntent.putExtra("username", username);
         homeIntent.putExtra("sessionId", sessionId);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
