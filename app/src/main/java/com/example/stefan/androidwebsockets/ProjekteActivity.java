@@ -4,15 +4,13 @@
 package com.example.stefan.androidwebsockets;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -21,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class ProjekteActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     int projectId = projects.get(position).getInt("id");
-                    navigateToSubprojectActivity(nanomeSessionId, projectId);
+                 //   navigateToSubprojectActivity(nanomeSessionId, projectId);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -106,12 +105,12 @@ public class ProjekteActivity extends Activity {
             }
         }
     }
-
+/*
     private void navigateToSubprojectActivity(String sessionId, int projectId){
         Intent subprojectIntent = new Intent(getApplicationContext(),SubprojectActivity.class);
         subprojectIntent.putExtra("projectId", projectId);
         subprojectIntent.putExtra("sessionId", sessionId);
         subprojectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(subprojectIntent);
-    }
+    } */
 }

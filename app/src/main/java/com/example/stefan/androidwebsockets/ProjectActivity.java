@@ -4,7 +4,6 @@
 package com.example.stefan.androidwebsockets;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -20,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ProjectActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     String projectId = projects.get(position).getString("id");
-                    navigateToSubProjectActivity(projectId);
+                    //navigateToSubProjectActivity(projectId);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -104,13 +104,13 @@ public class ProjectActivity extends Activity {
             }
         }
     }
-
+/*
     private void navigateToSubProjectActivity(String projectId){
-        Intent subProjectIntent = new Intent(getApplicationContext(),SubProjectActivity.class);
+        Intent subProjectIntent = new Intent(getApplicationContext(),SubprojectActivity.class);
         subProjectIntent.putExtra("projectId", projectId);
         subProjectIntent.putExtra("sessionId", nanomeSessionId);
         subProjectIntent.putExtra("username", username);
         subProjectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(subProjectIntent);
-    }
+    } */
 }
