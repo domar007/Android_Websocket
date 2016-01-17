@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
     private boolean textChanged = true;
     private JSONObject json;
     private int stringStartPosition, stringEndPosition, stringEndPositionBefore, color;
-    private String stringText, stringEditMethod, uuid, value;
+    private String stringText, stringEditMethod, uuid, username, subProjectText;
     public static final String ADD = "add";
     public static final String REPLACE = "replace";
     public static final String DELETE = "delete";
@@ -47,7 +47,8 @@ public class MainActivity extends Activity {
     private void init() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            value = extras.getString("username");
+            username = extras.getString("username");
+            subProjectText = extras.getString("subProjectText");
         }
 
         user = (TextView) findViewById(R.id.username);
@@ -57,6 +58,7 @@ public class MainActivity extends Activity {
         uuid = UUID.randomUUID().toString();
         color = generateRandomColor();
         text.setTextColor(color);
+        text.setText(subProjectText);
         connectToWebSocket();
 
         // Add event listener
@@ -87,7 +89,7 @@ public class MainActivity extends Activity {
 
                     try {
                         json.put("uuid", uuid);
-                        json.put("user", value);
+                        json.put("user", username);
                         json.put("editMethod", stringEditMethod);
                         json.put("startPos", stringStartPosition);
                         json.put("endPos", stringEndPosition);

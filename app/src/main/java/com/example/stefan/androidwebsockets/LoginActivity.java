@@ -109,11 +109,11 @@ public class LoginActivity  extends Activity {
             // Convert value strings to json object
             JSONObject json = new JSONObject();
             try {
-                json.put("username", username); //
+                json.put("username", username); //wgabsi88@gmail.com
                 json.put("password", password); //5B5F-7CC4-4C2E AC84-B443-468A
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            } 
             //json.put("token", token);
             // Pass json object to string entity
             StringEntity entity = null;
@@ -184,7 +184,7 @@ public class LoginActivity  extends Activity {
      */
     public void navigatetoHomeActivity(String sessionId){
         String username = mUsernameView.getText().toString().trim();
-        Intent homeIntent = new Intent(getApplicationContext(),ProjekteActivity.class);
+        Intent homeIntent = new Intent(getApplicationContext(),ProjectActivity.class);
         homeIntent.putExtra("username", username);
         homeIntent.putExtra("sessionId", sessionId);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
