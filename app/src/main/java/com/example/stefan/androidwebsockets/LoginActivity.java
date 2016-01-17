@@ -113,7 +113,7 @@ public class LoginActivity  extends Activity {
                 json.put("password", password); //5B5F-7CC4-4C2E AC84-B443-468A
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            } 
             //json.put("token", token);
             // Pass json object to string entity
             StringEntity entity = null;
