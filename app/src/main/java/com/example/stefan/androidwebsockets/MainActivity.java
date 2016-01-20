@@ -2,6 +2,7 @@ package com.example.stefan.androidwebsockets;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -11,13 +12,21 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Random;
@@ -25,16 +34,19 @@ import java.util.UUID;
 
 public class MainActivity extends Activity {
 
-    private EditText text;
-    private TextView user;
+    private EditText editText;
     private WebSocketClient mWebSocketClient;
+    private SaveSubProjectTask saveSubProjectTask;
     private boolean textChanged = true;
-    private JSONObject json;
-    private int stringStartPosition, stringEndPosition, stringEndPositionBefore, color;
-    private String stringText, stringEditMethod, uuid, username, subProjectText;
-    public static final String ADD = "add";
-    public static final String REPLACE = "replace";
-    public static final String DELETE = "delete";
+    private Handler handler;
+    private int color;
+    private String lockId, idex, uuid, nanomeSessionId, subProjectText;
+    String[] params;
+    private final static String CONTENT_TYPE_JSON = "application/json";
+    private final static String NANOME_SESSIONID = "nanomeSessionId";
+    private static final String ADD = "add";
+    private static final String REPLACE = "replace";
+    private static final String DELETE = "delete";
 
 
     @Override
@@ -47,22 +59,23 @@ public class MainActivity extends Activity {
     private void init() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            username = extras.getString("username");
             subProjectText = extras.getString("subProjectText");
+            nanomeSessionId = extras.getString("sessionId");
+            idex = extras.getString("idex");
+            lockId = nanomeSessionId;
         }
 
-        user = (TextView) findViewById(R.id.username);
-        text = (EditText) findViewById(R.id.task_textfield);
-
-        json = new JSONObject();
+        editText = (EditText) findViewById(R.id.task_textfield);
+        saveSubProjectTask = new SaveSubProjectTask();
         uuid = UUID.randomUUID().toString();
         color = generateRandomColor();
-        text.setTextColor(color);
-        text.setText(subProjectText);
-        connectToWebSocket();
+        editText.setTextColor(color);
+        editText.setText(subProjectText);
+        handler = new Handler();
+        //connectToWebSocket();
 
         // Add event listener
-        text.addTextChangedListener(new TextWatcher() {
+        editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -70,54 +83,13 @@ public class MainActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (textChanged) {
-                    stringStartPosition = start;
-                    String hexColorValue = convertIntColorToHexColor(color);
-                    if ((before == 0) && (count >= 1)) {
-                        stringEditMethod = ADD;
-                        stringEndPosition = stringStartPosition + count;
-                        stringText = text.getText().toString().substring(stringStartPosition, stringEndPosition);
-                    } else if ((count > 0) && (before > 0)) {
-                        stringEndPosition = stringStartPosition + count;
-                        stringEndPositionBefore = stringStartPosition + before;
-                        stringText = text.getText().toString().substring(stringStartPosition, stringEndPosition);
-                        stringEditMethod = REPLACE;
-                    } else {
-                        stringEndPosition = stringStartPosition + before;
-                        stringEditMethod = DELETE;
-                    }
-
-                    try {
-                        json.put("uuid", uuid);
-                        json.put("user", username);
-                        json.put("editMethod", stringEditMethod);
-                        json.put("startPos", stringStartPosition);
-                        json.put("endPos", stringEndPosition);
-                        json.put("endPosBefore", stringEndPositionBefore);
-                        json.put("textColor", hexColorValue);
-                        json.put("text", stringText);
-                    } catch (JSONException e) {
-                        Log.i("JSON Exception", e.getStackTrace().toString());
-                    }
-
-                    //Send json
-                    mWebSocketClient.send(json.toString());
-                }
+                String currentText = editText.getText().toString();
+                params = new String[]{nanomeSessionId, lockId, idex, currentText};
+                saveSubProjectTask.execute(params);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
-                final Handler handler = new Handler();
-
-                Runnable task = new Runnable() {
-                    @Override
-                    public void run() {
-                        user.setText("");
-                    }
-                };
-                handler.postDelayed(task, 1000);
-
 
             }
         });
@@ -158,15 +130,14 @@ public class MainActivity extends Activity {
                                 Spannable span = new SpannableString(resultText);
                                 span.setSpan(new ForegroundColorSpan(textColor), 0, span.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 if (editMethod.equals(ADD)) {
-                                    text.getText().insert(startPos, span);
+                                    editText.getText().insert(startPos, span);
                                 } else if (editMethod.equals(REPLACE)) {
                                     int endPosBefore = resultJson.getInt("endPosBefore");
-                                    text.getText().replace(startPos, endPosBefore, span);
+                                    editText.getText().replace(startPos, endPosBefore, span);
                                 } else if (editMethod.equals(DELETE)) {
-                                    text.getText().replace(startPos, endPos, "");
+                                    editText.getText().replace(startPos, endPos, "");
                                 }
                             }
-                            user.setText(resultJson.get("user").toString() + " is typing");
                             textChanged = true;
 
                         } catch (JSONException e) {
@@ -194,7 +165,7 @@ public class MainActivity extends Activity {
      * Generates random integer color value
      * @return
      */
-    private int generateRandomColor(){
+    private int generateRandomColor() {
         Random rnd = new Random();
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
         return color;
@@ -205,7 +176,7 @@ public class MainActivity extends Activity {
      * @param intColor
      * @return
      */
-    private String convertIntColorToHexColor(int intColor){
+    private String convertIntColorToHexColor(int intColor) {
         String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
         return hexColor;
     }
@@ -215,8 +186,113 @@ public class MainActivity extends Activity {
      * @param hexColor
      * @return
      */
-    private int convertHexColorToIntColor(String hexColor){
+    private int convertHexColorToIntColor(String hexColor) {
         int intColor = Color.parseColor(hexColor);
         return intColor;
+    }
+
+    /**
+     * Return edit text changes as json object
+     * @param start
+     * @param before
+     * @param count
+     * @param color
+     * @return
+     */
+    private JSONObject getTextChanges(int start, int before, int count, int color) {
+        int startPosition = start;
+        int endPosition = 0;
+        int endPositionBefore = 0;
+        String text = "";
+        String editMethod = "";
+        JSONObject json = new JSONObject();
+        String hexColorValue = convertIntColorToHexColor(color);
+        if ((before == 0) && (count >= 1)) {
+            editMethod = ADD;
+            endPosition = startPosition + count;
+            text = editText.getText().toString().substring(startPosition, endPosition);
+        } else if ((count > 0) && (before > 0)) {
+            endPosition = startPosition + count;
+            endPositionBefore = startPosition + before;
+            text = editText.getText().toString().substring(startPosition, endPosition);
+            editMethod = REPLACE;
+        } else {
+            endPosition = startPosition + before;
+            editMethod = DELETE;
+        }
+
+        try {
+            json.put("uuid", uuid);
+            json.put("editMethod", editMethod);
+            json.put("startPos", startPosition);
+            json.put("endPos", endPosition);
+            json.put("endPosBefore", endPositionBefore);
+            json.put("textColor", hexColorValue);
+            json.put("text", text);
+        } catch (JSONException e) {
+            Log.i("JSON Exception", e.getStackTrace().toString());
+        }
+        return json;
+    }
+
+    /**
+     *  Async Task to save the subProject text
+     */
+    private class SaveSubProjectTask extends AsyncTask<String[], Void, String> {
+
+        protected String doInBackground(String[]... params) {
+            String[] passed = params[0];
+            String sessionId = passed[0];
+            String lockId = passed[1];
+            String idex = passed[2];
+            String text = passed[3];
+
+            HttpClient httpClient = new DefaultHttpClient();
+            // Post request
+            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/projectpart/write");
+            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
+            httpPost.addHeader("Cookie", NANOME_SESSIONID + "=" + sessionId);
+            // Convert value strings to json object
+            JSONObject json = new JSONObject();
+            String serverResponse = null;
+            try {
+                json.put("idex", idex); //
+                json.put("lockid", lockId);
+                json.put("text", text);
+                StringEntity entity = new StringEntity(json.toString());
+                // Add entity to post request
+                httpPost.setEntity(entity);
+                // Execute request and handle response
+                HttpResponse resp = httpClient.execute(httpPost);
+                serverResponse = EntityUtils.toString(resp.getEntity());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return serverResponse;
+            //	return text;
+        }
+
+
+
+        protected void onPostExecute(String results) {
+            if (results != null) {
+                Toast.makeText(getApplicationContext(), results, Toast.LENGTH_LONG).show();
+                try {
+                    JSONObject result = new JSONObject(results);
+                    int errorCode = result.getInt("errorcode");
+                    if (errorCode == 0) {
+                        lockId = result.getString("lockid");
+                    }
+                    Toast.makeText(getApplicationContext(), "Task saved", Toast.LENGTH_SHORT).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

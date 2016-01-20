@@ -24,51 +24,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectActivity extends Activity {
+public class SubProjectActivity extends Activity {
     private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
-    private List<JSONObject> projects = new ArrayList<JSONObject>();
-    private List<String> projectNames = new ArrayList<String>();
+    private List<JSONObject> subProjects = new ArrayList<JSONObject>();
+    private List<String> subProjectNames = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
-    private GetProjectsTask getProjectsTask;
+    private GetSubProjectsTask getSubProjectsTask;
     private ListView listView;
-    String username, nanomeSessionId;
+    String projectId, nanomeSessionId, username;
+    String[] params;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_projects);
-        listView = (ListView) findViewById(R.id.projectListView);
+        setContentView(R.layout.activity_subprojects);
+        listView = (ListView) findViewById(R.id.subProjectListView);
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            username = extras.getString("username");
             nanomeSessionId = extras.getString("sessionId");
+            projectId = extras.getString("projectId");
+            username = extras.getString("username");
         }
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, projectNames);
+        params = new String[] {nanomeSessionId, projectId};
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, subProjectNames);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    String projectId = projects.get(position).getString("id");
-                    navigateToSubProjectActivity(projectId);
+                    String subProjectText = subProjects.get(position).getString("text");
+                    String idex = subProjects.get(position).getString("idex");
+                    navigateToMainActivity(subProjectText, idex);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        getProjectsTask = new GetProjectsTask();
-        getProjectsTask.execute(nanomeSessionId);
+        getSubProjectsTask = new GetSubProjectsTask();
+        getSubProjectsTask.execute(params);
     }
 
-    private class GetProjectsTask extends AsyncTask<String, Void, String> {
+    private class GetSubProjectsTask extends AsyncTask<String[], Void, String> {
 
-        protected String doInBackground(String... params) {
-            String sessionId = params[0];
+        protected String doInBackground(String[]... params) {
+            String[] passed = params[0];
+            String sessionId = passed[0];
+            String projectId = passed[1];
+
             HttpClient httpClient = new DefaultHttpClient();
             // Post request
-            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/project/getAll");
+            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/project/getInfoByProjectId?objectid=" + projectId);
             httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
             httpPost.addHeader("Cookie", NANOME_SESSIONID + "=" + sessionId);
             String serverResponse = null;
@@ -89,13 +96,13 @@ public class ProjectActivity extends Activity {
             if (results != null) {
                 try {
                     JSONObject project = new JSONObject(results);
-                    JSONArray projectsFromJson = project.getJSONArray("projects");
+                    JSONArray subProjectsFromJson = project.getJSONArray("projectparts");
                     adapter.clear();
-                    projectNames.clear();
-                    for (int i = 0; i < projectsFromJson.length(); i++) {
-                        JSONObject projectsJson = projectsFromJson.getJSONObject(i);
-                        projects.add(projectsJson);
-                        projectNames.add(projectsJson.getString("title"));
+                    subProjectNames.clear();
+                    for (int i = 0; i < subProjectsFromJson.length(); i++) {
+                        JSONObject subProjectsJson = subProjectsFromJson.getJSONObject(i);
+                        subProjects.add(subProjectsJson);
+                        subProjectNames.add(subProjectsJson.getString("description"));
                     }
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
@@ -105,11 +112,11 @@ public class ProjectActivity extends Activity {
         }
     }
 
-    private void navigateToSubProjectActivity(String projectId){
-        Intent subProjectIntent = new Intent(getApplicationContext(),SubProjectActivity.class);
-        subProjectIntent.putExtra("projectId", projectId);
+    private void navigateToMainActivity(String subProjectText, String idex){
+        Intent subProjectIntent = new Intent(getApplicationContext(),MainActivity.class);
+        subProjectIntent.putExtra("subProjectText", subProjectText);
         subProjectIntent.putExtra("sessionId", nanomeSessionId);
-        subProjectIntent.putExtra("username", username);
+        subProjectIntent.putExtra("idex", idex);
         subProjectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(subProjectIntent);
     }

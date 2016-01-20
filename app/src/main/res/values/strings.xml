@@ -1,29 +1,17 @@
 <resources>
     <string name="app_name">AndroidWebsockets</string>
-    <string-array name="autocomplete_list">
-        <item>and</item>
-        <item>contains</item>
-        <item>not</item>
-        <item>or</item>
-        <item>arctan()</item>
-        <item>avg()</item>
-        <item>cos()</item>
-        <item>cot()</item>
-        <item>count()</item>
-        <item>daysBetween()</item>
-        <item>hasAttribute()</item>
-        <item>hoursBetween()</item>
-        <item>ln()</item>
-        <item>log()</item>
-        <item>max()</item>
-        <item>min()</item>
-        <item>minutesBetween()</item>
-        <item>monthsBetween()</item>
-        <item>sin()</item>
-        <item>sqrt()</item>
-        <item>sum()</item>
-        <item>tan()</item>
-        <item>weeksBetween()</item>
-        <item>yearsBetween()</item>
-    </string-array>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Login</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>
