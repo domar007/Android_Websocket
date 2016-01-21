@@ -24,6 +24,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".ProjectActivity" />
         <activity android:name=".SubProjectActivity" />
+        <activity android:name=".Subactivity" />
     </application>
 
 </manifest>

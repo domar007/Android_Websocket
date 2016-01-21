@@ -47,7 +47,7 @@ import java.util.List;
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**   wgabsi88@gmail.com
- * 5B5F-7CC4-4C2E
+ * 5B5F-7CC4-4C2E   android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
@@ -155,9 +155,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-
+      //  String email = mEmailView.getText().toString();
+      //  String password = mPasswordView.getText().toString();
+        String password="5B5F-7CC4-4C2E";
+        String email ="wgabsi88@gmail.com";
         boolean cancel = false;
         View focusView = null;
 

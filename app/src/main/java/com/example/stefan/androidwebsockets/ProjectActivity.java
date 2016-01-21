@@ -106,7 +106,7 @@ public class ProjectActivity extends Activity {
     }
 
     private void navigateToSubProjectActivity(String projectId){
-        Intent subProjectIntent = new Intent(getApplicationContext(),SubProjectActivity.class);
+        Intent subProjectIntent = new Intent(getApplicationContext(),Subactivity.class);
         subProjectIntent.putExtra("projectId", projectId);
         subProjectIntent.putExtra("sessionId", nanomeSessionId);
         subProjectIntent.putExtra("username", username);
