@@ -80,7 +80,7 @@ public class ProjectActivity extends Activity {
                 e.printStackTrace();
             }
             return serverResponse;
-            //	return text;
+           
         }
 
 
