@@ -1,29 +1,36 @@
 package com.example.stefan.androidwebsockets;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.EditText;
+import android.view.MotionEvent;
 
 /**
  * Created by waelgabsi on 21.01.16.
  */
-public class CustomViewPager extends ViewPager {
-
-    public CustomViewPager(Context context) {
-        super(context);
-    }
+public class CustomViewPager extends android.support.v4.view.ViewPager{
+    private boolean enabled;
 
     public CustomViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.enabled = true;
     }
 
     @Override
-    protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
-        if (v instanceof EditText) {
-            return true;
-        }
-        return super.canScroll(v, checkV, dx, x, y);
+    public boolean onTouchEvent(MotionEvent event) {
+        return enabled ? super.onTouchEvent(event) : false;
     }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        return enabled ? super.onInterceptTouchEvent(event) : false;
+    }
+
+    public void setPagingEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isPagingEnabled() {
+        return enabled;
+    }
+
 }

@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email ="wgabsi88@gmail.com";
         boolean cancel = false;
         View focusView = null;
-
+// android:fillViewport="true"
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
