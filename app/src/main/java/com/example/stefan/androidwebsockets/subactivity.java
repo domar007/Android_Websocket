@@ -1,6 +1,5 @@
 package com.example.stefan.androidwebsockets;
 
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -30,8 +29,8 @@ public class Subactivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private GetSubProjectsTask getSubProjectsTask;
     private ListView listView;
-    String projectId, nanomeSessionId, username;
-    String[] params;
+    private SessionId nanomeSessionId;
+    String projectId;
     TabLayout tabLayout;
 
 
@@ -40,27 +39,22 @@ public class Subactivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subactivity);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        nanomeSessionId = SessionId.getInstance();
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            nanomeSessionId = extras.getString("sessionId");
             projectId = extras.getString("projectId");
-            username = extras.getString("username");
         }
-        params = new String[] {nanomeSessionId, projectId};
         getSubProjectsTask = new GetSubProjectsTask();
-        getSubProjectsTask.execute(params);
-
-
+        getSubProjectsTask.execute(projectId);
     }
 
 
-    private class GetSubProjectsTask extends AsyncTask<String[], Void, String> {
+    private class GetSubProjectsTask extends AsyncTask<String, Void, String> {
 
-        protected String doInBackground(String[]... params) {
-            String[] passed = params[0];
-            String sessionId = passed[0];
-            String projectId = passed[1];
+        protected String doInBackground(String... params) {
+            String projectId = params[0];
+            String sessionId = nanomeSessionId.getSessionId();
 
             HttpClient httpClient = new DefaultHttpClient();
             // Post request

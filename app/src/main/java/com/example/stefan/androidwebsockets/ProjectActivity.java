@@ -4,9 +4,12 @@
 package com.example.stefan.androidwebsockets;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,18 +35,19 @@ public class ProjectActivity extends Activity {
     private ArrayAdapter<String> adapter;
     private GetProjectsTask getProjectsTask;
     private ListView listView;
-    String username, nanomeSessionId;
+    private SessionId nanomeSessionId;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
         listView = (ListView) findViewById(R.id.projectListView);
+        nanomeSessionId = SessionId.getInstance();
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             username = extras.getString("username");
-            nanomeSessionId = extras.getString("sessionId");
         }
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, projectNames);
         listView.setAdapter(adapter);
@@ -59,13 +63,15 @@ public class ProjectActivity extends Activity {
             }
         });
         getProjectsTask = new GetProjectsTask();
-        getProjectsTask.execute(nanomeSessionId);
+        getProjectsTask.execute();
     }
 
     private class GetProjectsTask extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
-            String sessionId = params[0];
+            String sessionId = nanomeSessionId.getSessionId();
+
+            Log.d("sessionId", sessionId);
             HttpClient httpClient = new DefaultHttpClient();
             // Post request
             HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/project/getAll");
@@ -108,7 +114,6 @@ public class ProjectActivity extends Activity {
     private void navigateToSubProjectActivity(String projectId){
         Intent subProjectIntent = new Intent(getApplicationContext(),Subactivity.class);
         subProjectIntent.putExtra("projectId", projectId);
-        subProjectIntent.putExtra("sessionId", nanomeSessionId);
         subProjectIntent.putExtra("username", username);
         subProjectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(subProjectIntent);

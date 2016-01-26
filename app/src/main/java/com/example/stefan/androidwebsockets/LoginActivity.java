@@ -3,7 +3,9 @@ package com.example.stefan.androidwebsockets;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -57,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
     private final static String CONTENT_TYPE_JSON = "application/json";
+    private SessionId nanomeSessionId;
     private UserLoginTask mAuthTask = null;
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -94,6 +97,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        nanomeSessionId = SessionId.getInstance();
     }
 
     private void populateAutoComplete() {
@@ -157,8 +161,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Store values at the time of the login attempt.
       //  String email = mEmailView.getText().toString();
       //  String password = mPasswordView.getText().toString();
-        String password="5B5F-7CC4-4C2E";
-        String email ="wgabsi88@gmail.com";
+        //String password="5B5F-7CC4-4C2E";
+        //String email ="wgabsi88@gmail.com";
+        String password="test123";
+        String email ="s49145@beuth-hochschule.de";
         boolean cancel = false;
         View focusView = null;
 // android:fillViewport="true"
@@ -340,18 +346,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (results!=null) {
                 JSONObject arr = null;
                 String errorCode = null;
-                String nanomeSessionId = null;
+                String sessionId = null;
                 try {
                     arr = new JSONObject(results);
                     errorCode = arr.getString("errorCode");
-                    nanomeSessionId = arr.getString("nanomeSessionId");
+                    sessionId = arr.getString("nanomeSessionId");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 if(errorCode.equals("0"))
                 {
-                    navigateToHomeActivity(nanomeSessionId);
+                    nanomeSessionId.setSessionId(sessionId);
+                    navigateToHomeActivity();
                 }
                 else {
                     mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -372,11 +379,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Method which navigates from Login Activity to Home Activity
      */
-    public void navigateToHomeActivity(String sessionId){
+    public void navigateToHomeActivity(){
         String username = mEmailView.getText().toString().trim();
         Intent homeIntent = new Intent(getApplicationContext(),ProjectActivity.class);
         homeIntent.putExtra("username", username);
-        homeIntent.putExtra("sessionId", sessionId);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(homeIntent);
     }
