@@ -1,6 +1,8 @@
 package com.example.stefan.androidwebsockets;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -105,7 +107,7 @@ public class Tab_subproject extends Fragment {
     }
 
     /**
-     *  Async Task to save the subProject text
+     *  Async Task to save the subProject
      */
     private class SaveSubProjectTask extends AsyncTask<String[], Void, String> {
 
@@ -153,15 +155,67 @@ public class Tab_subproject extends Fragment {
                 try {
                     JSONObject result = new JSONObject(results);
                     int errorCode = result.getInt("errorcode");
-                    if (errorCode == 0) {
-                        lockId = result.getString("lockid");
-                        Toast.makeText(getActivity().getApplicationContext(), "Task saved", Toast.LENGTH_SHORT).show();
+                    switch (errorCode) {
+                        case 0:
+                            lockId = result.getString("lockid");
+                            Toast.makeText(getActivity().getApplicationContext(), "Task saved", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 3:
+                            showDialogOnDeletedSubProject();
+                            break;
+                        case 4:
+                            showDialogOnLockIdChanged();
+                            break;
+                        default:break;
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    /**
+     * Show dialog when an subProject was deleted
+     */
+    private void showDialogOnDeletedSubProject() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Das bearbeitete Teilprojekt ist nicht mehr vorhanden." + "\n" +
+                "Möchten Sie die Teilprojekte neu laden ?")
+                .setCancelable(false)
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getActivity().recreate();
+                    }
+                })
+                .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getActivity().finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    /**
+     * Show dialog when lockId has changed
+     */
+    private void showDialogOnLockIdChanged() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Das Teilprojekt kann nicht bearbeitet werden." + "\n" +
+                "Möchten Sie das Teilprojekt neu laden ?")
+                .setCancelable(false)
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getActivity().recreate();
+                    }
+                })
+                .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getActivity().finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
