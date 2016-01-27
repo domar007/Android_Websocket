@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import java.util.TimerTask;
 public class Tab_subproject extends Fragment {
     private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
+    private SaveSubProjectTask saveSubProjectTask;
     private SessionId sessionId;
     Bundle args;
     private EditText field;
@@ -88,7 +90,8 @@ public class Tab_subproject extends Fragment {
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        new SaveSubProjectTask().execute(params);
+                        saveSubProjectTask = new SaveSubProjectTask();
+                        saveSubProjectTask.execute(params);
                     }
                 }, 5000);
             }
@@ -104,6 +107,14 @@ public class Tab_subproject extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("subProjectLockId", lockId);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (saveSubProjectTask != null) {
+            saveSubProjectTask.cancel(true);
+        }
     }
 
     /**
@@ -151,14 +162,13 @@ public class Tab_subproject extends Fragment {
 
         protected void onPostExecute(String results) {
             if (results != null) {
-                Toast.makeText(getActivity().getApplicationContext(), results, Toast.LENGTH_LONG).show();
                 try {
                     JSONObject result = new JSONObject(results);
                     int errorCode = result.getInt("errorcode");
                     switch (errorCode) {
                         case 0:
                             lockId = result.getString("lockid");
-                            Toast.makeText(getActivity().getApplicationContext(), "Task saved", Toast.LENGTH_SHORT).show();
+                            Log.d("Subproject", "saved");
                             break;
                         case 3:
                             showDialogOnDeletedSubProject();
