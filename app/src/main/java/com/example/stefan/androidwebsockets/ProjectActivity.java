@@ -4,12 +4,9 @@
 package com.example.stefan.androidwebsockets;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +20,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +69,7 @@ public class ProjectActivity extends Activity {
         protected String doInBackground(String... params) {
             String sessionId = nanomeSessionId.getSessionId();
 
-            Log.d("sessionId", sessionId);
+//            Log.d("sessionId", sessionId);
             HttpClient httpClient = new DefaultHttpClient();
             // Post request
             HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/project/getAll");
