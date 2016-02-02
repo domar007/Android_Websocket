@@ -1,4 +1,4 @@
-﻿package com.example.stefan.androidwebsockets;
+package com.example.stefan.androidwebsockets;
 
 
 import android.app.AlertDialog;

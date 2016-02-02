@@ -92,7 +92,7 @@ public class Subactivity extends AppCompatActivity {
                     for (int i = 0; i < subProjectslength; i++) {
                         JSONObject subProjectsJson = subProjectsFromJson.getJSONObject(i);
                         subProjects.add(subProjectsJson);
-                        subProjectNames.add(subProjectsJson.getString("description"));
+                        subProjectNames.add(subProjectsJson.getString("title"));
                     }
 
                 } catch (JSONException e) {
