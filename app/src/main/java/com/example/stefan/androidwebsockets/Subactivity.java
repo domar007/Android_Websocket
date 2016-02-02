@@ -1,11 +1,14 @@
 package com.example.stefan.androidwebsockets;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -45,10 +48,17 @@ public class Subactivity extends AppCompatActivity {
         if(extras != null) {
             projectId = extras.getString("projectId");
         }
+        executeGetSubProjectsTask();
+        getWindow().setTitle("Hello");
+    }
+
+    /**
+     * Execute async task GetSubProjectsTask
+     */
+    public void executeGetSubProjectsTask() {
         getSubProjectsTask = new GetSubProjectsTask();
         getSubProjectsTask.execute(projectId);
     }
-
 
     private class GetSubProjectsTask extends AsyncTask<String, Void, String> {
 
@@ -83,34 +93,28 @@ public class Subactivity extends AppCompatActivity {
                         JSONObject subProjectsJson = subProjectsFromJson.getJSONObject(i);
                         subProjects.add(subProjectsJson);
                         subProjectNames.add(subProjectsJson.getString("description"));
-
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if(subProjectslength > 4){
 
-
-                }
                 for (int i = 0; i < subProjectslength; i++) {
                     tabLayout.addTab(tabLayout.newTab().setText(subProjectNames.get(i)));
-
                 }
-
-//
-                // tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
                 final CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.pager);
                 viewPager.setPagingEnabled(false);
                 final PagerAdapter adapter = new PagerAdapter
-                        (getSupportFragmentManager(), tabLayout.getTabCount(),subProjects);
+                        (getSupportFragmentManager(), tabLayout.getTabCount(), subProjects);
                 viewPager.setAdapter(adapter);
                 viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
                 tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
                         viewPager.setCurrentItem(tab.getPosition());
+                        TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
+                        new GetSingleSubProjectTask().execute(fragment);
                     }
 
                     @Override
@@ -123,6 +127,31 @@ public class Subactivity extends AppCompatActivity {
 
                     }
                 });
+            }
+        }
+    }
+
+    private class GetSingleSubProjectTask extends AsyncTask<TabSubProject, Void, TabSubProject> {
+
+        ProgressDialog progressDialog = new ProgressDialog(Subactivity.this);
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.setMessage("Updating");
+            progressDialog.show();
+        }
+
+        protected TabSubProject doInBackground(TabSubProject... params) {
+            TabSubProject currentSubProject = params[0];
+            currentSubProject.getArguments().putString("test", "AsyncTaskDone");
+            return currentSubProject;
+        }
+        protected void onPostExecute(TabSubProject tabSubProject) {
+            if (tabSubProject != null) {
+                Bundle args = tabSubProject.getArguments();
+                //tabSubProject.changeText(args.getString("..."));
+                Toast.makeText(getApplicationContext(), "Idex: " + args.getString("idex"), Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             }
         }
     }

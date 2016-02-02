@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,29 +28,32 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         this.subProjects = subProjects;
         fragments = new ArrayList<Fragment>();
         for (int i = 0; i < mNumOfTabs; i++) {
-            fragments.add(new Tab_subproject());
+            fragments.add(new TabSubProject());
         }
     }
 
     @Override
     public Fragment getItem(int position) {
-        Fragment actuel_fragment =fragments.get(position);
-        Bundle args = new Bundle();
-
-        try {
-            subProjectText =  subProjects.get(position).getString("text");
-            subProjectLockId = subProjects.get(position).getString("lockid");
-            idex = subProjects.get(position).getString("idex");
-        } catch (JSONException e) {
-            e.printStackTrace();
+        Fragment currentFragment = fragments.get(position);
+        if (!currentFragment.isAdded()) {
+            Bundle args = new Bundle();
+            try {
+                subProjectText =  subProjects.get(position).getString("text");
+                subProjectLockId = subProjects.get(position).getString("lockid");
+                idex = subProjects.get(position).getString("idex");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            args.putString("subProjectText",subProjectText);
+            args.putString("subProjectLockId",subProjectLockId);
+            args.putString("idex",idex);
+            args.putInt("name", position + 1);
+            currentFragment.setArguments(args);
         }
-        args.putString("subProjectText",subProjectText);
-        args.putString("subProjectLockId",subProjectLockId);
-        args.putString("idex",idex);
-        args.putInt("name", position + 1);
-        actuel_fragment.setArguments(args);
-        return actuel_fragment ;
+        return currentFragment ;
     }
+
+
 
 
 
