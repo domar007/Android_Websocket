@@ -44,12 +44,15 @@ public class TabSubProject extends Fragment {
     private String[] params;
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
         field = (EditText) view.findViewById(R.id.task_textfield);
         field.setEllipsize(null);
         sessionId = SessionId.getInstance();
+
+
         timer = new Timer();
         args = getArguments();
         String text =  args.getString("subProjectText");
@@ -62,6 +65,7 @@ public class TabSubProject extends Fragment {
             }
         }
         field.setText(text);
+
         return view;
     }
 

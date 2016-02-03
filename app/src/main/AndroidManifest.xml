@@ -23,9 +23,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".ProjectActivity" android:label="@string/title_project_activity" />
+        <activity
+        android:name=".ProjectActivity" android:label="@string/title_project_activity" >
+
+        </activity>
         <activity android:name=".SubProjectActivity" />
-        <activity android:name=".Subactivity" android:label="@string/title_sub_project_activity" />
+        <activity android:name=".Subactivity" android:label="@string/title_sub_project_activity" android:parentActivityName="com.example.stefan.androidwebsockets.ProjectActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.stefan.androidwebsockets.ProjectActivity" >
+        </meta-data>
+        </activity>
+        <activity android:name=".TestSlideActivity" android:label="@string/title_sub_project_activity" />
     </application>
 
 </manifest>

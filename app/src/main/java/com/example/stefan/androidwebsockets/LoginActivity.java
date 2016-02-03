@@ -299,6 +299,7 @@ public class LoginActivity extends AppCompatActivity {
         homeIntent.putExtra("username", username);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(homeIntent);
+        finish();
     }
 }
 

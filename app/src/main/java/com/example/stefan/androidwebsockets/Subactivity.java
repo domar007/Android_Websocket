@@ -35,6 +35,10 @@ public class Subactivity extends AppCompatActivity {
     private SessionId nanomeSessionId;
     String projectId;
     TabLayout tabLayout;
+    String TabTitle;
+    String TabSelectedTitle;
+     CustomViewPager viewPager;
+
 
 
     @Override
@@ -43,6 +47,11 @@ public class Subactivity extends AppCompatActivity {
         setContentView(R.layout.subactivity);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         nanomeSessionId = SessionId.getInstance();
+
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
@@ -103,7 +112,7 @@ public class Subactivity extends AppCompatActivity {
                     tabLayout.addTab(tabLayout.newTab().setText(subProjectNames.get(i)));
                 }
 
-                final CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.pager);
+                viewPager = (CustomViewPager) findViewById(R.id.pager);
                 viewPager.setPagingEnabled(false);
                 final PagerAdapter adapter = new PagerAdapter
                         (getSupportFragmentManager(), tabLayout.getTabCount(), subProjects);
@@ -112,13 +121,34 @@ public class Subactivity extends AppCompatActivity {
                 tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
+
+
                         viewPager.setCurrentItem(tab.getPosition());
+
+                        TabTitle = tab.getText().toString();
+                      int a =  TabTitle.indexOf("*");
+                        Log.e("dsafsadf",""+a);
+                        if(a > -1){
+                        TabTitle = TabTitle.substring(0, TabTitle.length() - 1);
+                        Log.e("bbbbbbb", "" + TabTitle);
+                        tab.setText(TabTitle);
+                        }
+
+
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
-                        new GetSingleSubProjectTask().execute(fragment);
+                        new GetSingleSubProjectTask().execute(fragment,tab,TabTitle);
                     }
 
                     @Override
                     public void onTabUnselected(TabLayout.Tab tab) {
+                        TabTitle = tab.getText().toString();
+                        tab.setText(TabTitle+"*");
+                        Log.e("aaaaaaaaa", "" + TabTitle);
+                 /*       TabSelectedTitle = tab.getText().toString();
+                        Log.e("aaaaaaaaa", "" + TabSelectedTitle);
+                        TabSelectedTitle = TabSelectedTitle.substring(0, TabSelectedTitle.length() - 1);
+                        Log.e("bbbbbbbb", "" + TabSelectedTitle);
+                        tab.setText(TabSelectedTitle); */
 
                     }
 
@@ -131,7 +161,7 @@ public class Subactivity extends AppCompatActivity {
         }
     }
 
-    private class GetSingleSubProjectTask extends AsyncTask<TabSubProject, Void, TabSubProject> {
+    private class GetSingleSubProjectTask extends AsyncTask<Object , Void, TabSubProject> {
 
         ProgressDialog progressDialog = new ProgressDialog(Subactivity.this);
 
@@ -139,15 +169,21 @@ public class Subactivity extends AppCompatActivity {
         protected void onPreExecute() {
             progressDialog.setMessage("Updating");
             progressDialog.show();
+
         }
 
-        protected TabSubProject doInBackground(TabSubProject... params) {
-            TabSubProject currentSubProject = params[0];
+        protected TabSubProject doInBackground(Object... params) {
+            TabSubProject currentSubProject = (TabSubProject) params[0];
+            TabLayout.Tab currentTab = (TabLayout.Tab) params[1];
+          //  String currentTabTitle = (String) params[2];
+          //  currentTabTitle = currentTabTitle.substring(0, currentTabTitle.length() - 1);
             currentSubProject.getArguments().putString("test", "AsyncTaskDone");
+          //  currentTab.setText(currentTabTitle);
             return currentSubProject;
         }
         protected void onPostExecute(TabSubProject tabSubProject) {
             if (tabSubProject != null) {
+
                 Bundle args = tabSubProject.getArguments();
                 //tabSubProject.changeText(args.getString("..."));
                 Toast.makeText(getApplicationContext(), "Idex: " + args.getString("idex"), Toast.LENGTH_SHORT).show();
@@ -155,6 +191,8 @@ public class Subactivity extends AppCompatActivity {
             }
         }
     }
+
+
 
 
 }
