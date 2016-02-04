@@ -38,15 +38,17 @@ public class TabSubProject extends Fragment {
     private SaveSubProjectTask saveSubProjectTask;
     private SessionId sessionId;
     private Bundle args;
-    private EditText field;
     private Timer timer;
-    private String idex, lockId;
+    private String idEx, lockId;
     private String[] params;
-
+    private boolean changeText = true;
+    private EditText field = null;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(getClass().toString(), "onCreateView");
+        Log.e("This fragment", this.toString());
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
         field = (EditText) view.findViewById(R.id.task_textfield);
         field.setEllipsize(null);
@@ -57,7 +59,7 @@ public class TabSubProject extends Fragment {
         args = getArguments();
         String text =  args.getString("subProjectText");
         lockId = args.getString("subProjectLockId");
-        idex = args.getString("idex");
+        idEx = args.getString("idex");
         // Save lockId on screen rotation
         if (savedInstanceState != null) {
             if (savedInstanceState.getSerializable("subProjectLockId") != null) {
@@ -75,16 +77,12 @@ public class TabSubProject extends Fragment {
         setRetainInstance(true);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(getClass().getSimpleName(), "onStart()");
-    }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(getClass().getSimpleName(), "onResume()");
+
         field.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -93,16 +91,19 @@ public class TabSubProject extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                params = new String[]{sessionId.getSessionId(), lockId, idex, field.getText().toString()};
-                timer.cancel();
-                timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        saveSubProjectTask = new SaveSubProjectTask();
-                        saveSubProjectTask.execute(params);
-                    }
-                }, 5000);
+                if (changeText) {
+                                        Log.d(getClass().toString(), "Change text");
+                                        params = new String[]{sessionId.getSessionId(), lockId, idEx, field.getText().toString()};
+                                        timer.cancel();
+                                        timer = new Timer();
+                                        timer.schedule(new TimerTask() {
+                                                @Override
+                                                public void run() {
+                                                        saveSubProjectTask = new SaveSubProjectTask();
+                                                        saveSubProjectTask.execute(params);
+                                                    }
+                                            }, 5000);
+                                    }
             }
 
             @Override
@@ -135,7 +136,7 @@ public class TabSubProject extends Fragment {
             String[] passed = params[0];
             String sessionId = passed[0];
             String lockId = passed[1];
-            String idex = passed[2];
+            String idEx = passed[2];
             String text = passed[3];
 
             HttpClient httpClient = new DefaultHttpClient();
@@ -147,7 +148,7 @@ public class TabSubProject extends Fragment {
             JSONObject json = new JSONObject();
             String serverResponse = null;
             try {
-                json.put("idex", idex); //
+                json.put("idex", idEx); //
                 json.put("lockid", lockId);
                 json.put("text", text);
                 StringEntity entity = new StringEntity(json.toString());
@@ -172,7 +173,7 @@ public class TabSubProject extends Fragment {
             if (results != null) {
                 try {
                     JSONObject result = new JSONObject(results);
-                    int errorCode = result.getInt("errorcode");
+                    int errorCode = result.getInt("errorCode");
                     switch (errorCode) {
                         case 0:
                             lockId = result.getString("lockid");
@@ -197,8 +198,8 @@ public class TabSubProject extends Fragment {
      */
     private void showDialogOnDeletedSubProject() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Das bearbeitete Teilprojekt ist nicht mehr vorhanden." + "\n" +
-                "Möchten Sie die Teilprojekte neu laden ?")
+        builder.setMessage("Das Teilprojekt wurde bereits bearbeitet." + "\n" +
+                               "Möchten Sie das Teilprojekt aktualisieren ?")
                 .setCancelable(false)
                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -240,7 +241,9 @@ public class TabSubProject extends Fragment {
         alert.show();
     }
 
-    public void changeText(String text) {
+    public void changeTabText(String text) {
+                changeText = false;
         field.setText(text);
+                changeText = true;
     }
-}
+    }

@@ -36,6 +36,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Fragment currentFragment = fragments.get(position);
         if (!currentFragment.isAdded()) {
+            Log.e("Fragment added", "Fragment added");
             Bundle args = new Bundle();
             try {
                 subProjectText =  subProjects.get(position).getString("text");

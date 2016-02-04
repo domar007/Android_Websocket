@@ -8,7 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.example.stefan.androidwebsockets.CustomViewPager;
+import com.example.stefan.androidwebsockets.R;
+import com.example.stefan.androidwebsockets.SessionId;
+import com.example.stefan.androidwebsockets.TabSubProject;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -23,22 +27,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
+
+
 public class Subactivity extends AppCompatActivity {
     private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private List<JSONObject> subProjects = new ArrayList<JSONObject>();
     private List<String> subProjectNames = new ArrayList<String>();
-    private int subProjectslength;
+    private int subProjectsLength, selectedTabPosition;
     private ArrayAdapter<String> adapter;
     private GetSubProjectsTask getSubProjectsTask;
     private ListView listView;
     private SessionId nanomeSessionId;
     String projectId;
     TabLayout tabLayout;
-    String TabTitle;
-    String TabSelectedTitle;
-     CustomViewPager viewPager;
-
 
 
     @Override
@@ -47,18 +51,37 @@ public class Subactivity extends AppCompatActivity {
         setContentView(R.layout.subactivity);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         nanomeSessionId = SessionId.getInstance();
-
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
+        selectedTabPosition = -1;
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             projectId = extras.getString("projectId");
         }
         executeGetSubProjectsTask();
-        getWindow().setTitle("Hello");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e(getClass().toString(), "OnResume");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.e(getClass().toString(), "OnStart");
+        if (selectedTabPosition >= 0) {
+            TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedTabPosition);
+            selectedTab.select();
+            Log.d(getClass().toString(), "Tab selected");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        selectedTabPosition = tabLayout.getSelectedTabPosition();
+        Log.d("TabId: ", String.valueOf(selectedTabPosition));
     }
 
     /**
@@ -96,9 +119,9 @@ public class Subactivity extends AppCompatActivity {
                 try {
                     JSONObject project = new JSONObject(results);
                     JSONArray subProjectsFromJson = project.getJSONArray("projectparts");
-                    subProjectslength = subProjectsFromJson.length();
+                    subProjectsLength = subProjectsFromJson.length();
                     subProjectNames.clear();
-                    for (int i = 0; i < subProjectslength; i++) {
+                    for (int i = 0; i < subProjectsLength; i++) {
                         JSONObject subProjectsJson = subProjectsFromJson.getJSONObject(i);
                         subProjects.add(subProjectsJson);
                         subProjectNames.add(subProjectsJson.getString("title"));
@@ -108,11 +131,11 @@ public class Subactivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                for (int i = 0; i < subProjectslength; i++) {
+                for (int i = 0; i < subProjectsLength; i++) {
                     tabLayout.addTab(tabLayout.newTab().setText(subProjectNames.get(i)));
                 }
 
-                viewPager = (CustomViewPager) findViewById(R.id.pager);
+                final CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.pager);
                 viewPager.setPagingEnabled(false);
                 final PagerAdapter adapter = new PagerAdapter
                         (getSupportFragmentManager(), tabLayout.getTabCount(), subProjects);
@@ -121,78 +144,77 @@ public class Subactivity extends AppCompatActivity {
                 tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
-
-
                         viewPager.setCurrentItem(tab.getPosition());
-
-                        TabTitle = tab.getText().toString();
-                      int a =  TabTitle.indexOf("*");
-                        Log.e("dsafsadf",""+a);
-                        if(a > -1){
-                        TabTitle = TabTitle.substring(0, TabTitle.length() - 1);
-                        Log.e("bbbbbbb", "" + TabTitle);
-                        tab.setText(TabTitle);
-                        }
-
-
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
-                        new GetSingleSubProjectTask().execute(fragment,tab,TabTitle);
+                        String idEx = fragment.getArguments().getString("idex");
+                        new GetSingleSubProjectTask(fragment, idEx).execute();
                     }
 
                     @Override
                     public void onTabUnselected(TabLayout.Tab tab) {
-                        TabTitle = tab.getText().toString();
-                        tab.setText(TabTitle+"*");
-                        Log.e("aaaaaaaaa", "" + TabTitle);
-                 /*       TabSelectedTitle = tab.getText().toString();
-                        Log.e("aaaaaaaaa", "" + TabSelectedTitle);
-                        TabSelectedTitle = TabSelectedTitle.substring(0, TabSelectedTitle.length() - 1);
-                        Log.e("bbbbbbbb", "" + TabSelectedTitle);
-                        tab.setText(TabSelectedTitle); */
 
                     }
 
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
-
+                        viewPager.setCurrentItem(tab.getPosition());
+                        TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
+                        String idEx = fragment.getArguments().getString("idex");
+                        new GetSingleSubProjectTask(fragment, idEx).execute();
                     }
                 });
             }
         }
     }
 
-    private class GetSingleSubProjectTask extends AsyncTask<Object , Void, TabSubProject> {
+    private class GetSingleSubProjectTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog = new ProgressDialog(Subactivity.this);
+        TabSubProject tabSubProject;
+        String idEx;
+
+        GetSingleSubProjectTask(TabSubProject tabSubProject, String idEx) {
+            this.tabSubProject = tabSubProject;
+            this.idEx = idEx;
+        }
 
         @Override
         protected void onPreExecute() {
             progressDialog.setMessage("Updating");
             progressDialog.show();
-
         }
 
-        protected TabSubProject doInBackground(Object... params) {
-            TabSubProject currentSubProject = (TabSubProject) params[0];
-            TabLayout.Tab currentTab = (TabLayout.Tab) params[1];
-          //  String currentTabTitle = (String) params[2];
-          //  currentTabTitle = currentTabTitle.substring(0, currentTabTitle.length() - 1);
-            currentSubProject.getArguments().putString("test", "AsyncTaskDone");
-          //  currentTab.setText(currentTabTitle);
-            return currentSubProject;
-        }
-        protected void onPostExecute(TabSubProject tabSubProject) {
-            if (tabSubProject != null) {
+        protected String doInBackground(String... params) {
+            String sessionId = nanomeSessionId.getSessionId();
+            HttpClient httpClient = new DefaultHttpClient();
+            // Post request
+            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/projectpart/getInfoByIdEx/" + idEx);
+            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
+            httpPost.addHeader("Cookie", NANOME_SESSIONID + "=" + sessionId);
+            String serverResponse = null;
 
-                Bundle args = tabSubProject.getArguments();
-                //tabSubProject.changeText(args.getString("..."));
-                Toast.makeText(getApplicationContext(), "Idex: " + args.getString("idex"), Toast.LENGTH_SHORT).show();
+            try {
+                HttpResponse resp = httpClient.execute(httpPost);
+                serverResponse = EntityUtils.toString(resp.getEntity());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return serverResponse;
+        }
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                try {
+                    JSONObject subProject = new JSONObject(result);
+                    tabSubProject.changeTabText(subProject.getString("text"));
+                    tabSubProject.getArguments().putString("subProjectLockId", subProject.getString("lockid"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 progressDialog.dismiss();
             }
         }
     }
-
-
 
 
 }
