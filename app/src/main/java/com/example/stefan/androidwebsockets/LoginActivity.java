@@ -63,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, ProjectActivity.class);
             intent.putExtra("username", "s49145@beuth-hochschule.de");
             startActivity(intent);
+            finish();
         }
 
 

@@ -9,11 +9,6 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.stefan.androidwebsockets.CustomViewPager;
-import com.example.stefan.androidwebsockets.R;
-import com.example.stefan.androidwebsockets.SessionId;
-import com.example.stefan.androidwebsockets.TabSubProject;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -69,12 +64,7 @@ public class Subactivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Log.e(getClass().toString(), "OnStart");
-        if (selectedTabPosition >= 0) {
-            TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedTabPosition);
-            selectedTab.select();
-            Log.d(getClass().toString(), "Tab selected");
-        }
+        selectLastSelectedTab();
     }
 
     @Override
@@ -87,10 +77,31 @@ public class Subactivity extends AppCompatActivity {
     /**
      * Execute async task GetSubProjectsTask
      */
-    public void executeGetSubProjectsTask() {
+    private void executeGetSubProjectsTask() {
         getSubProjectsTask = new GetSubProjectsTask();
         getSubProjectsTask.execute(projectId);
     }
+
+    /**
+     * Select last selected tab
+     */
+    protected void selectLastSelectedTab() {
+        if (selectedTabPosition >= 0) {
+            TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedTabPosition);
+            selectedTab.select();
+
+        }
+    }
+
+    protected void selectLastSelectedTabtext() {
+        if (selectedTabPosition >= 0) {
+            TabLayout.Tab selectedTab2 = tabLayout.getTabAt(selectedTabPosition);
+            selectedTab2.setText("yfsdf");
+
+        }
+    }
+
+
 
     private class GetSubProjectsTask extends AsyncTask<String, Void, String> {
 

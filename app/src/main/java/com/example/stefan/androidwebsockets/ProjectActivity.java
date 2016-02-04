@@ -190,7 +190,7 @@ builder.setTitle("Abmelden")
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation!");
+                getSupportActionBar().setTitle("TaskQl");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 

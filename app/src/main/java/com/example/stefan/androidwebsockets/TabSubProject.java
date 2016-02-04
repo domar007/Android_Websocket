@@ -92,6 +92,8 @@ public class TabSubProject extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (changeText) {
+                    Subactivity subactivity = (Subactivity) getActivity();
+                    subactivity.selectLastSelectedTabtext();
                                         Log.d(getClass().toString(), "Change text");
                                         params = new String[]{sessionId.getSessionId(), lockId, idEx, field.getText().toString()};
                                         timer.cancel();
@@ -176,6 +178,7 @@ public class TabSubProject extends Fragment {
                     int errorCode = result.getInt("errorCode");
                     switch (errorCode) {
                         case 0:
+
                             lockId = result.getString("lockid");
                             break;
                         case 3:
@@ -203,9 +206,8 @@ public class TabSubProject extends Fragment {
                 .setCancelable(false)
                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = getActivity().getIntent();
-                        getActivity().finish();
-                        startActivity(intent);
+                        Subactivity subactivity = (Subactivity) getActivity();
+                        subactivity.selectLastSelectedTab();
                     }
                 })
                 .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
