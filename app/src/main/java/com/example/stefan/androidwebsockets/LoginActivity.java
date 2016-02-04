@@ -119,12 +119,12 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-      //  String email = mEmailView.getText().toString();
-      //  String password = mPasswordView.getText().toString();
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
         //String password="5B5F-7CC4-4C2E";
         //String email ="wgabsi88@gmail.com";
-        String password="test123";
-        String email ="s49145@beuth-hochschule.de";
+      //  String password="test123";
+        //String email ="s49145@beuth-hochschule.de";
         boolean cancel = false;
         View focusView = null;
 // android:fillViewport="true"
