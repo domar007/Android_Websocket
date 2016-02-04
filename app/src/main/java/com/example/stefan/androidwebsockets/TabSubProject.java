@@ -2,18 +2,21 @@ package com.example.stefan.androidwebsockets;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -36,6 +39,7 @@ public class TabSubProject extends Fragment {
     private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private SaveSubProjectTask saveSubProjectTask;
+    private OnSelectLastSelectedTabListener onSelectLastSelectedTabListener;
     private SessionId sessionId;
     private Bundle args;
     private Timer timer;
@@ -47,14 +51,10 @@ public class TabSubProject extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(getClass().toString(), "onCreateView");
-        Log.e("This fragment", this.toString());
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
         field = (EditText) view.findViewById(R.id.task_textfield);
         field.setEllipsize(null);
         sessionId = SessionId.getInstance();
-
-
         timer = new Timer();
         args = getArguments();
         String text =  args.getString("subProjectText");
@@ -67,8 +67,17 @@ public class TabSubProject extends Fragment {
             }
         }
         field.setText(text);
-
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            onSelectLastSelectedTabListener = (OnSelectLastSelectedTabListener) context;
+        } catch (ClassCastException castException) {
+            castException.printStackTrace();
+        }
     }
 
     @Override
@@ -77,12 +86,9 @@ public class TabSubProject extends Fragment {
         setRetainInstance(true);
     }
 
-
-
     @Override
     public void onResume() {
         super.onResume();
-
         field.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -92,20 +98,18 @@ public class TabSubProject extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (changeText) {
-                    Subactivity subactivity = (Subactivity) getActivity();
-                    subactivity.selectLastSelectedTabtext();
-                                        Log.d(getClass().toString(), "Change text");
-                                        params = new String[]{sessionId.getSessionId(), lockId, idEx, field.getText().toString()};
-                                        timer.cancel();
-                                        timer = new Timer();
-                                        timer.schedule(new TimerTask() {
-                                                @Override
-                                                public void run() {
-                                                        saveSubProjectTask = new SaveSubProjectTask();
-                                                        saveSubProjectTask.execute(params);
-                                                    }
-                                            }, 5000);
-                                    }
+                    onSelectLastSelectedTabListener.selectLastSelectedTabText();
+                    params = new String[]{sessionId.getSessionId(), lockId, idEx, field.getText().toString()};
+                    timer.cancel();
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                                saveSubProjectTask = new SaveSubProjectTask();
+                                saveSubProjectTask.execute(params);
+                        }
+                    }, 5000);
+                }
             }
 
             @Override
@@ -153,6 +157,7 @@ public class TabSubProject extends Fragment {
                 json.put("idex", idEx); //
                 json.put("lockid", lockId);
                 json.put("text", text);
+                Log.d("Json", json.toString());
                 StringEntity entity = new StringEntity(json.toString());
                 // Add entity to post request
                 httpPost.setEntity(entity);
@@ -169,8 +174,6 @@ public class TabSubProject extends Fragment {
             return serverResponse;
         }
 
-
-
         protected void onPostExecute(String results) {
             if (results != null) {
                 try {
@@ -178,7 +181,6 @@ public class TabSubProject extends Fragment {
                     int errorCode = result.getInt("errorCode");
                     switch (errorCode) {
                         case 0:
-
                             lockId = result.getString("lockid");
                             break;
                         case 3:
@@ -199,22 +201,22 @@ public class TabSubProject extends Fragment {
     /**
      * Show dialog when an subProject was deleted
      */
-    private void showDialogOnDeletedSubProject() {
+    protected void showDialogOnDeletedSubProject() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Das Teilprojekt wurde bereits bearbeitet." + "\n" +
-                               "Möchten Sie das Teilprojekt aktualisieren ?")
-                .setCancelable(false)
-                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Subactivity subactivity = (Subactivity) getActivity();
-                        subactivity.selectLastSelectedTab();
-                    }
-                })
-                .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        getActivity().finish();
-                    }
-                });
+        builder.setMessage("Das Teilprojekt wurde gelöscht.")
+            .setCancelable(false)
+            .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent intent = getActivity().getIntent();
+                    getActivity().finish();
+                    startActivity(intent);
+                }
+            })
+            .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    getActivity().finish();
+                }
+            });
         AlertDialog alert = builder.create();
         alert.show();
     }
@@ -222,30 +224,27 @@ public class TabSubProject extends Fragment {
     /**
      * Show dialog when lockId has changed
      */
-    private void showDialogOnLockIdChanged() {
+    protected void showDialogOnLockIdChanged() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Das Teilprojekt kann nicht bearbeitet werden." + "\n" +
-                "Möchten Sie das Teilprojekt neu laden ?")
-                .setCancelable(false)
-                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = getActivity().getIntent();
-                        getActivity().finish();
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        getActivity().finish();
-                    }
-                });
+        builder.setMessage("Fehler beim Speichern des Teilprojekts.")
+            .setCancelable(false)
+            .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    onSelectLastSelectedTabListener.selectLastSelectedTab();
+                }
+            })
+            .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    getActivity().finish();
+                }
+            });
         AlertDialog alert = builder.create();
         alert.show();
     }
 
     public void changeTabText(String text) {
-                changeText = false;
+        changeText = false;
         field.setText(text);
-                changeText = true;
+        changeText = true;
     }
-    }
+}

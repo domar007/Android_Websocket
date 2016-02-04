@@ -5,10 +5,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -17,16 +15,12 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-
-
-
-public class Subactivity extends AppCompatActivity {
+public class Subactivity extends AppCompatActivity implements OnSelectLastSelectedTabListener {
     private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private List<JSONObject> subProjects = new ArrayList<JSONObject>();
@@ -58,7 +52,6 @@ public class Subactivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(getClass().toString(), "OnResume");
     }
 
     @Override
@@ -71,7 +64,6 @@ public class Subactivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         selectedTabPosition = tabLayout.getSelectedTabPosition();
-        Log.d("TabId: ", String.valueOf(selectedTabPosition));
     }
 
     /**
@@ -85,23 +77,22 @@ public class Subactivity extends AppCompatActivity {
     /**
      * Select last selected tab
      */
-    protected void selectLastSelectedTab() {
+    public void selectLastSelectedTab() {
         if (selectedTabPosition >= 0) {
             TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedTabPosition);
             selectedTab.select();
-
         }
     }
 
-    protected void selectLastSelectedTabtext() {
+    /**
+     * Select last selected tab text
+     */
+    public void selectLastSelectedTabText() {
         if (selectedTabPosition >= 0) {
             TabLayout.Tab selectedTab2 = tabLayout.getTabAt(selectedTabPosition);
             selectedTab2.setText("yfsdf");
-
         }
     }
-
-
 
     private class GetSubProjectsTask extends AsyncTask<String, Void, String> {
 
@@ -156,6 +147,7 @@ public class Subactivity extends AppCompatActivity {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
                         viewPager.setCurrentItem(tab.getPosition());
+                        selectedTabPosition = tab.getPosition();
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
                         String idEx = fragment.getArguments().getString("idex");
                         new GetSingleSubProjectTask(fragment, idEx).execute();
@@ -169,6 +161,7 @@ public class Subactivity extends AppCompatActivity {
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
                         viewPager.setCurrentItem(tab.getPosition());
+                        selectedTabPosition = tab.getPosition();
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
                         String idEx = fragment.getArguments().getString("idex");
                         new GetSingleSubProjectTask(fragment, idEx).execute();
@@ -216,8 +209,12 @@ public class Subactivity extends AppCompatActivity {
             if (result != null) {
                 try {
                     JSONObject subProject = new JSONObject(result);
-                    tabSubProject.changeTabText(subProject.getString("text"));
-                    tabSubProject.getArguments().putString("subProjectLockId", subProject.getString("lockid"));
+                    if (subProject.length() > 0) {
+                        tabSubProject.changeTabText(subProject.getString("text"));
+                        tabSubProject.getArguments().putString("subProjectLockId", subProject.getString("lockid"));
+                    } else {
+                        tabSubProject.showDialogOnDeletedSubProject();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
