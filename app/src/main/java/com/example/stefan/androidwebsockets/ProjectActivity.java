@@ -34,11 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectActivity extends AppCompatActivity {
-    private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     public static final String PREFS_NAME = "LoginPrefs";
     private List<JSONObject> projects = new ArrayList<JSONObject>();
     private List<String> projectNames = new ArrayList<String>();
+    private Connection connection;
     private ArrayAdapter<String> adapter;
     private GetProjectsTask getProjectsTask;
     private ListView listView;
@@ -60,6 +60,7 @@ public class ProjectActivity extends AppCompatActivity {
         nanomeSessionId = SessionId.getInstance();
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        connection = new Connection();
         mActivityTitle = getTitle().toString();
         builder = new AlertDialog.Builder(this);
         addDrawerItems();
@@ -93,23 +94,13 @@ public class ProjectActivity extends AppCompatActivity {
 
         protected String doInBackground(String... params) {
             String sessionId = nanomeSessionId.getSessionId();
-
-//            Log.d("sessionId", sessionId);
-            HttpClient httpClient = new DefaultHttpClient();
-            // Post request
-            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/project/getAll");
-            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
-            httpPost.addHeader("Cookie", NANOME_SESSIONID + "=" + sessionId);
             String serverResponse = null;
-
             try {
-                HttpResponse resp = httpClient.execute(httpPost);
-                serverResponse = EntityUtils.toString(resp.getEntity());
+                serverResponse = connection.doPostRequestWithAdditionalHeader("http://beta.taskql.com/rest/api/1/project/getAll", NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return serverResponse;
-           
         }
 
 

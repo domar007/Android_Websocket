@@ -21,10 +21,10 @@ import java.util.List;
 
 
 public class Subactivity extends AppCompatActivity implements OnSelectLastSelectedTabListener {
-    private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private List<JSONObject> subProjects = new ArrayList<JSONObject>();
     private List<String> subProjectNames = new ArrayList<String>();
+    private Connection connection;
     private int subProjectsLength, selectedTabPosition;
     private ArrayAdapter<String> adapter;
     private GetSubProjectsTask getSubProjectsTask;
@@ -40,6 +40,7 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
         setContentView(R.layout.subactivity);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         nanomeSessionId = SessionId.getInstance();
+        connection = new Connection();
         selectedTabPosition = -1;
 
         Bundle extras = getIntent().getExtras();
@@ -99,22 +100,13 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
         protected String doInBackground(String... params) {
             String projectId = params[0];
             String sessionId = nanomeSessionId.getSessionId();
-
-            HttpClient httpClient = new DefaultHttpClient();
-            // Post request
-            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/project/getInfoByProjectId?objectid=" + projectId);
-            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
-            httpPost.addHeader("Cookie", NANOME_SESSIONID + "=" + sessionId);
             String serverResponse = null;
-
             try {
-                HttpResponse resp = httpClient.execute(httpPost);
-                serverResponse = EntityUtils.toString(resp.getEntity());
+                serverResponse = connection.doPostRequestWithAdditionalHeader("http://beta.taskql.com/rest/api/1/project/getInfoByProjectId?objectid=" + projectId, NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return serverResponse;
-            //	return text;
         }
         protected void onPostExecute(String results) {
             if (results != null) {
@@ -190,21 +182,15 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
 
         protected String doInBackground(String... params) {
             String sessionId = nanomeSessionId.getSessionId();
-            HttpClient httpClient = new DefaultHttpClient();
-            // Post request
-            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/projectpart/getInfoByIdEx/" + idEx);
-            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
-            httpPost.addHeader("Cookie", NANOME_SESSIONID + "=" + sessionId);
             String serverResponse = null;
-
             try {
-                HttpResponse resp = httpClient.execute(httpPost);
-                serverResponse = EntityUtils.toString(resp.getEntity());
+                serverResponse = connection.doPostRequestWithAdditionalHeader("http://beta.taskql.com/rest/api/1/projectpart/getInfoByIdEx/" + idEx, NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return serverResponse;
         }
+
         protected void onPostExecute(String result) {
             if (result != null) {
                 try {

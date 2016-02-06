@@ -36,9 +36,9 @@ import java.util.TimerTask;
  */
 
 public class TabSubProject extends Fragment {
-    private final static String CONTENT_TYPE_JSON = "application/json";
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private SaveSubProjectTask saveSubProjectTask;
+    private Connection connection;
     private OnSelectLastSelectedTabListener onSelectLastSelectedTabListener;
     private SessionId sessionId;
     private Bundle args;
@@ -52,6 +52,7 @@ public class TabSubProject extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
+        connection = new Connection();
         field = (EditText) view.findViewById(R.id.task_textfield);
         field.setEllipsize(null);
         sessionId = SessionId.getInstance();
@@ -145,28 +146,14 @@ public class TabSubProject extends Fragment {
             String idEx = passed[2];
             String text = passed[3];
 
-            HttpClient httpClient = new DefaultHttpClient();
-            // Post request
-            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/projectpart/write");
-            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
-            httpPost.addHeader("Cookie", NANOME_SESSIONID + "=" + sessionId);
-            // Convert value strings to json object
-            JSONObject json = new JSONObject();
             String serverResponse = null;
+            JSONObject json = new JSONObject();
             try {
-                json.put("idex", idEx); //
+                json.put("idex", idEx);
                 json.put("lockid", lockId);
                 json.put("text", text);
-                Log.d("Json", json.toString());
-                StringEntity entity = new StringEntity(json.toString());
-                // Add entity to post request
-                httpPost.setEntity(entity);
-                // Execute request and handle response
-                HttpResponse resp = httpClient.execute(httpPost);
-                serverResponse = EntityUtils.toString(resp.getEntity());
+                serverResponse = connection.doPostRequestWithAdditionalDataAndHeader("http://beta.taskql.com/rest/api/1/projectpart/write", json.toString(), NANOME_SESSIONID + "=" + sessionId);
             } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();

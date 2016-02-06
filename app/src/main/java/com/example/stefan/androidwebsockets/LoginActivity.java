@@ -18,6 +18,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,6 +32,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 /**   wgabsi88@gmail.com
  * 5B5F-7CC4-4C2E   android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
  * A login screen that offers login via email/password.
@@ -41,8 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Id to identity READ_CONTACTS permission request.
      */
-    private static final int REQUEST_READ_CONTACTS = 0;
-    private final static String CONTENT_TYPE_JSON = "application/json";
+    private Connection connection;
     private SessionId nanomeSessionId;
     private UserLoginTask mAuthTask = null;
     // UI references.
@@ -55,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         nanomeSessionId = SessionId.getInstance();
+        connection = new Connection();
         setContentView(R.layout.activity_login2);
         // Set up the login form.
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -221,26 +228,13 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-
-            HttpClient httpClient = new DefaultHttpClient();
-            // Post request
-            HttpPost httpPost = new HttpPost("http://beta.taskql.com/rest/api/1/taskql/login");
-            httpPost.setHeader("content-type", CONTENT_TYPE_JSON);
-            // Convert value strings to json object
-            JSONObject json = new JSONObject();
             String serverResponse = null;
+            JSONObject json = new JSONObject();
             try {
-                json.put("username", mEmail); //
-                json.put("password", mPassword); //5B5F-7CC4-4C2E AC84-B443-468A
-                StringEntity entity = new StringEntity(json.toString());
-                // Add entity to post request
-                httpPost.setEntity(entity);
-                // Execute request and handle response
-                HttpResponse resp = httpClient.execute(httpPost);
-                serverResponse = EntityUtils.toString(resp.getEntity());
+                json.put("username", mEmail);
+                json.put("password", mPassword);
+                serverResponse = connection.doPostRequestWithAdditionalData("http://beta.taskql.com/rest/api/1/taskql/login", json.toString());
             } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
