@@ -1,4 +1,4 @@
-package com.example.stefan.androidwebsockets;
+package com.example.beuth.taskql;
 
 /**
  * Created by waelgabsi on 05.01.16.
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.example.stefan.androidwebsockets;
+package com.example.beuth.taskql;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -13,6 +13,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.beuth.tasql.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

@@ -1,4 +1,4 @@
-package com.example.stefan.androidwebsockets;
+package com.example.beuth.taskql;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

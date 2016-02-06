@@ -1,4 +1,4 @@
-package com.example.stefan.androidwebsockets;
+package com.example.beuth.taskql;
 
 
 import android.app.AlertDialog;
@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.example.beuth.tasql.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

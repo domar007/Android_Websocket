@@ -1,4 +1,4 @@
-package com.example.stefan.androidwebsockets;
+package com.example.beuth.taskql;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -7,6 +7,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.example.beuth.tasql.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

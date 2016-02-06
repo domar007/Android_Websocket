@@ -1,7 +1,7 @@
 /**
  * Created by waelgabsi on 26.11.15.
  */
-package com.example.stefan.androidwebsockets;
+package com.example.beuth.taskql;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,9 +19,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.example.beuth.tasql.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
