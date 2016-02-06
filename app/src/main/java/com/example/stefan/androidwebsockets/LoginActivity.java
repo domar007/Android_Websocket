@@ -23,16 +23,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 
-/**   wgabsi88@gmail.com
- * 5B5F-7CC4-4C2E   android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+/**
+ *
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "LoginPrefs";
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
+
     private Connection connection;
     private SessionId nanomeSessionId;
     private UserLoginTask mAuthTask = null;
@@ -45,28 +43,32 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         nanomeSessionId = SessionId.getInstance();
         connection = new Connection();
+
         setContentView(R.layout.activity_login2);
-        // Set up the login form.
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mPasswordView = (EditText) findViewById(R.id.password);
+
+        // get the shared preferences to know if the user open the app for the first time
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         if (settings.getString("logged", "").toString().equals("logged")) {
-           String username = settings.getString("username", "").toString();
+
+            String username = settings.getString("username", "").toString();
             String password =  settings.getString("password", "").toString();
+
             mAuthTask = new UserLoginTask(username, password);
             mAuthTask.execute((Void) null);
             nanomeSessionId.setSessionId(settings.getString("SSID", ""));
+
+
             Intent intent = new Intent(LoginActivity.this, ProjectActivity.class);
             intent.putExtra("username", username);
             startActivity(intent);
             finish();
         }
 
-
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-
-
-        mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -91,16 +93,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-
-
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -118,13 +110,9 @@ public class LoginActivity extends AppCompatActivity {
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-        //String password="5B5F-7CC4-4C2E";
-        //String email ="wgabsi88@gmail.com";
-      //  String password="test123";
-        //String email ="s49145@beuth-hochschule.de";
         boolean cancel = false;
         View focusView = null;
-// android:fillViewport="true"
+
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));

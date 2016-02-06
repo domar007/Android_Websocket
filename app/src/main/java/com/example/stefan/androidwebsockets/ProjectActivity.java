@@ -53,9 +53,11 @@ public class ProjectActivity extends AppCompatActivity {
         nanomeSessionId = SessionId.getInstance();
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+
         connection = new Connection();
         mActivityTitle = getTitle().toString();
         builder = new AlertDialog.Builder(this);
+
         addDrawerItems();
         setupDrawer();
 
@@ -138,7 +140,7 @@ public class ProjectActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
                     case 0:
-builder.setTitle("Abmelden")
+                            builder.setTitle("Abmelden")
                                 .setMessage("Sind Sie sicher, dass Sie sich abmelden wollen?")
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {

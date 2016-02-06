@@ -14,8 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,7 +44,8 @@ public class TabSubProject extends Fragment {
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
         connection = new Connection();
         field = (EditText) view.findViewById(R.id.task_textfield);
-        field.setEllipsize(null);
+       // field.setEllipsize(null);
+        //field.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         sessionId = SessionId.getInstance();
         timer = new Timer();
         args = getArguments();
@@ -161,7 +164,7 @@ public class TabSubProject extends Fragment {
                             lockId = result.getString("lockid");
                             break;
                         case 3:
-                            showDialogOnDeletedSubProject();
+//                            showDialogOnDeletedSubProject();
                             break;
                         case 4:
                             showDialogOnLockIdChanged();
