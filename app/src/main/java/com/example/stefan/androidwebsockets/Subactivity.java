@@ -7,9 +7,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
     private SessionId nanomeSessionId;
     String projectId;
     TabLayout tabLayout;
+    private OnSelectLastSelectedTabListener onSelectLastSelectedTabListener;
 
 
     @Override
@@ -85,8 +88,21 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
      */
     public void selectLastSelectedTabText() {
         if (selectedTabPosition >= 0) {
+            TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedTabPosition);
+             String tabtext = (String) selectedTab.getText();
+            tabtext = tabtext.replace('*', '\0');
+            selectedTab.setText(tabtext+"*");
+        }
+    }
+
+
+
+    public void delectLastSelectedTabText() {
+        if (selectedTabPosition >= 0) {
             TabLayout.Tab selectedTab2 = tabLayout.getTabAt(selectedTabPosition);
-            selectedTab2.setText("yfsdf");
+            String tabtext = (String) selectedTab2.getText();
+            tabtext = tabtext.replace('*', '\0');
+            selectedTab2.setText(tabtext);
         }
     }
 
@@ -135,6 +151,10 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
                     public void onTabSelected(TabLayout.Tab tab) {
                         viewPager.setCurrentItem(tab.getPosition());
                         selectedTabPosition = tab.getPosition();
+                        String tabtext = (String) tab.getText();
+                        tabtext = tabtext.replace('*', '\0');
+                        tab.setText(tabtext);
+
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
                         String idEx = fragment.getArguments().getString("idex");
                         new GetSingleSubProjectTask(fragment, idEx).execute();
@@ -142,6 +162,7 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
 
                     @Override
                     public void onTabUnselected(TabLayout.Tab tab) {
+
 
                     }
 
@@ -167,6 +188,7 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
         GetSingleSubProjectTask(TabSubProject tabSubProject, String idEx) {
             this.tabSubProject = tabSubProject;
             this.idEx = idEx;
+
         }
 
         @Override
@@ -176,6 +198,8 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
         }
 
         protected String doInBackground(String... params) {
+
+
             String sessionId = nanomeSessionId.getSessionId();
             String serverResponse = null;
             try {

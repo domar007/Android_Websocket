@@ -128,6 +128,7 @@ public class TabSubProject extends Fragment {
     private class SaveSubProjectTask extends AsyncTask<String[], Void, String> {
 
         protected String doInBackground(String[]... params) {
+
             String[] passed = params[0];
             String sessionId = passed[0];
             String lockId = passed[1];
@@ -152,6 +153,7 @@ public class TabSubProject extends Fragment {
         protected void onPostExecute(String results) {
             if (results != null) {
                 try {
+                    onSelectLastSelectedTabListener.delectLastSelectedTabText();
                     JSONObject result = new JSONObject(results);
                     int errorCode = result.getInt("errorCode");
                     switch (errorCode) {

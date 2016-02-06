@@ -6,4 +6,5 @@ package com.example.stefan.androidwebsockets;
 public interface OnSelectLastSelectedTabListener {
     public void selectLastSelectedTab();
     public void selectLastSelectedTabText();
+    public void delectLastSelectedTabText();
 }

@@ -51,9 +51,13 @@ public class LoginActivity extends AppCompatActivity {
         // Set up the login form.
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         if (settings.getString("logged", "").toString().equals("logged")) {
+           String username = settings.getString("username", "").toString();
+            String password =  settings.getString("password", "").toString();
+            mAuthTask = new UserLoginTask(username, password);
+            mAuthTask.execute((Void) null);
             nanomeSessionId.setSessionId(settings.getString("SSID", ""));
             Intent intent = new Intent(LoginActivity.this, ProjectActivity.class);
-            intent.putExtra("username", "s49145@beuth-hochschule.de");
+            intent.putExtra("username", username);
             startActivity(intent);
             finish();
         }
@@ -251,6 +255,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     nanomeSessionId.setSessionId(sessionId);
                     editor.putString("SSID", nanomeSessionId.getSessionId());
+                    editor.putString("username", mEmail);
+                    editor.putString("password", mPassword);
                     editor.commit();
                     navigateToHomeActivity();
                 }
