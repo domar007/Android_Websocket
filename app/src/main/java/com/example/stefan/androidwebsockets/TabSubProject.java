@@ -9,26 +9,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 import java.util.TimerTask;
 /**
@@ -233,5 +221,11 @@ public class TabSubProject extends Fragment {
         changeText = false;
         field.setText(text);
         changeText = true;
+    }
+
+    public void setLockId(String lockId) {
+        Bundle args = getArguments();
+        args.putString("subProjectLockId", lockId);
+        this.lockId = args.getString("subProjectLockId");
     }
 }

@@ -7,11 +7,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -197,7 +192,7 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
                     JSONObject subProject = new JSONObject(result);
                     if (subProject.length() > 0) {
                         tabSubProject.changeTabText(subProject.getString("text"));
-                        tabSubProject.getArguments().putString("subProjectLockId", subProject.getString("lockid"));
+                        tabSubProject.setLockId(subProject.getString("lockid"));
                     } else {
                         tabSubProject.showDialogOnDeletedSubProject();
                     }
