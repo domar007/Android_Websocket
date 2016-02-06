@@ -160,7 +160,11 @@ public class ProjectActivity extends AppCompatActivity {
 
                         break;
                     case 1:
-                        Toast.makeText(ProjectActivity.this, osArray[position], Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProjectActivity.this, "taskQL Project Management\n" +
+                                "Version 0.99\n" +
+                                "\n" +
+                                "Copyright © 2016 ziemer's informatik\n" +
+                                "All rights reserved.", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         Toast.makeText(ProjectActivity.this, "you didnt clicked", Toast.LENGTH_SHORT).show();
