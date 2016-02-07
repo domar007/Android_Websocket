@@ -52,7 +52,7 @@ public class LoginActivity extends Activity {
         nanomeSessionId = SessionId.getInstance();
         connection = new Connection();
 
-        setContentView(R.layout.activity_login2);
+        setContentView(R.layout.activity_login);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
 

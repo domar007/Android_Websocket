@@ -5,33 +5,27 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import com.example.beuth.tasql.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import com.example.beuth.tasql.R;
 
 
-public class Subactivity extends AppCompatActivity implements OnSelectLastSelectedTabListener {
+public class SubProjectActivity extends AppCompatActivity implements OnSelectLastSelectedTabListener {
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private List<JSONObject> subProjects = new ArrayList<JSONObject>();
     private List<String> subProjectNames = new ArrayList<String>();
+    private LinkedList<Integer> editedTabPositions = new LinkedList<Integer>();
     private Connection connection;
     private int subProjectsLength, selectedTabPosition;
-    private ArrayAdapter<String> adapter;
     private GetSubProjectsTask getSubProjectsTask;
-    private ListView listView;
     private SessionId nanomeSessionId;
     String projectId;
     TabLayout tabLayout;
-    private OnSelectLastSelectedTabListener onSelectLastSelectedTabListener;
 
 
     @Override
@@ -91,21 +85,53 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
     public void selectLastSelectedTabText() {
         if (selectedTabPosition >= 0) {
             TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedTabPosition);
-             String tabtext = (String) selectedTab.getText();
-            tabtext = tabtext.replace('*', '\0');
-            selectedTab.setText(tabtext+"*");
+            String tabText = (String) selectedTab.getText();
+            tabText = tabText.replace('*', '\0');
+            selectedTab.setText(tabText + "*");
         }
     }
 
+    /**
+     * Delete last edit tab text
+     */
+    public void deleteLastSelectedTabText(int position) {
+        TabLayout.Tab selectedTab = tabLayout.getTabAt(position);
+        String tabText = (String) selectedTab.getText();
+        tabText = tabText.replace('*', '\0');
+        selectedTab.setText(tabText);
+    }
 
-
-    public void delectLastSelectedTabText() {
-        if (selectedTabPosition >= 0) {
-            TabLayout.Tab selectedTab2 = tabLayout.getTabAt(selectedTabPosition);
-            String tabtext = (String) selectedTab2.getText();
-            tabtext = tabtext.replace('*', '\0');
-            selectedTab2.setText(tabtext);
+    /**
+     * Set edited tab position
+     */
+    public void addEditedTabPosition(int position) {
+        if (!editedTabPositions.contains(position)) {
+            editedTabPositions.add(position);
         }
+    }
+
+    /**
+     * Get first edited tab position
+     * @return
+     */
+    public int getFirstEditedTabPosition() {
+        return editedTabPositions.getFirst();
+    }
+
+    /**
+     * Remove first edited tab position
+     */
+    public void removeFirstEditedTabPosition() {
+        if (!editedTabPositions.isEmpty()) {
+            editedTabPositions.removeFirst();
+        }
+    }
+
+    /**
+     * Get selected tab position
+     */
+    public int getSelectedTabPosition() {
+        return tabLayout.getSelectedTabPosition();
     }
 
     private class GetSubProjectsTask extends AsyncTask<String, Void, String> {
@@ -153,9 +179,6 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
                     public void onTabSelected(TabLayout.Tab tab) {
                         viewPager.setCurrentItem(tab.getPosition());
                         selectedTabPosition = tab.getPosition();
-                        String tabtext = (String) tab.getText();
-                        tabtext = tabtext.replace('*', '\0');
-                        tab.setText(tabtext);
 
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
                         String idEx = fragment.getArguments().getString("idex");
@@ -164,7 +187,6 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
 
                     @Override
                     public void onTabUnselected(TabLayout.Tab tab) {
-
 
                     }
 
@@ -183,7 +205,7 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
 
     private class GetSingleSubProjectTask extends AsyncTask<String, Void, String> {
 
-        ProgressDialog progressDialog = new ProgressDialog(Subactivity.this);
+        ProgressDialog progressDialog = new ProgressDialog(SubProjectActivity.this);
         TabSubProject tabSubProject;
         String idEx;
 
@@ -230,6 +252,4 @@ public class Subactivity extends AppCompatActivity implements OnSelectLastSelect
             }
         }
     }
-
-
 }

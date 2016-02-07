@@ -125,7 +125,7 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     private void navigateToSubProjectActivity(String projectId){
-        Intent subProjectIntent = new Intent(getApplicationContext(),Subactivity.class);
+        Intent subProjectIntent = new Intent(getApplicationContext(),SubProjectActivity.class);
         subProjectIntent.putExtra("projectId", projectId);
         subProjectIntent.putExtra("username", username);
         subProjectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -142,8 +142,6 @@ public class ProjectActivity extends AppCompatActivity {
 
 
         };
-       // mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-       // mAdapter = new ArrayAdapter<String>(this, R.layout.navrow, R.id.Itemname,osArray);
         CustomNavRow adapter = new
                 CustomNavRow(ProjectActivity.this, osArray, imageId);
 

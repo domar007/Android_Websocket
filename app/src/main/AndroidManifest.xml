@@ -26,7 +26,7 @@
 
         </activity>
 
-        <activity android:name="com.example.beuth.taskql.Subactivity" android:label="@string/title_sub_project_activity" android:parentActivityName="com.example.beuth.taskql.ProjectActivity" android:configChanges="orientation|screenSize">
+        <activity android:name="com.example.beuth.taskql.SubProjectActivity" android:label="@string/title_sub_project_activity" android:parentActivityName="com.example.beuth.taskql.ProjectActivity" android:configChanges="orientation|screenSize">
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value="com.example.beuth.taskql.ProjectActivity" >

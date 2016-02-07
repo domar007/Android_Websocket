@@ -14,15 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
-import com.example.beuth.tasql.R;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import com.example.beuth.tasql.R;
 /**
  * Created by waelgabsi on 05.01.16.
  */
@@ -46,8 +43,6 @@ public class TabSubProject extends Fragment {
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
         connection = new Connection();
         field = (EditText) view.findViewById(R.id.task_textfield);
-       // field.setEllipsize(null);
-        //field.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         sessionId = SessionId.getInstance();
         timer = new Timer();
         args = getArguments();
@@ -92,6 +87,7 @@ public class TabSubProject extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (changeText) {
+                    onSelectLastSelectedTabListener.addEditedTabPosition(onSelectLastSelectedTabListener.getSelectedTabPosition());
                     onSelectLastSelectedTabListener.selectLastSelectedTabText();
                     params = new String[]{sessionId.getSessionId(), lockId, idEx, field.getText().toString()};
                     timer.cancel();
@@ -99,8 +95,8 @@ public class TabSubProject extends Fragment {
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                                saveSubProjectTask = new SaveSubProjectTask();
-                                saveSubProjectTask.execute(params);
+                            saveSubProjectTask = new SaveSubProjectTask();
+                            saveSubProjectTask.execute(params);
                         }
                     }, 5000);
                 }
@@ -158,7 +154,8 @@ public class TabSubProject extends Fragment {
         protected void onPostExecute(String results) {
             if (results != null) {
                 try {
-                    onSelectLastSelectedTabListener.delectLastSelectedTabText();
+                    onSelectLastSelectedTabListener.deleteLastSelectedTabText(onSelectLastSelectedTabListener.getFirstEditedTabPosition());
+                    onSelectLastSelectedTabListener.removeFirstEditedTabPosition();
                     JSONObject result = new JSONObject(results);
                     int errorCode = result.getInt("errorCode");
                     switch (errorCode) {
@@ -166,7 +163,7 @@ public class TabSubProject extends Fragment {
                             lockId = result.getString("lockid");
                             break;
                         case 3:
-//                            showDialogOnDeletedSubProject();
+                            showDialogOnDeletedSubProject();
                             break;
                         case 4:
                             showDialogOnLockIdChanged();
@@ -186,19 +183,19 @@ public class TabSubProject extends Fragment {
     protected void showDialogOnDeletedSubProject() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Das Teilprojekt wurde gelöscht.")
-            .setCancelable(false)
-            .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = getActivity().getIntent();
-                    getActivity().finish();
-                    startActivity(intent);
-                }
-            })
-            .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    getActivity().finish();
-                }
-            });
+                .setCancelable(false)
+                .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = getActivity().getIntent();
+                        getActivity().finish();
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getActivity().finish();
+                    }
+                });
         AlertDialog alert = builder.create();
         alert.show();
     }
@@ -209,17 +206,17 @@ public class TabSubProject extends Fragment {
     protected void showDialogOnLockIdChanged() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Fehler beim Speichern des Teilprojekts.")
-            .setCancelable(false)
-            .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    onSelectLastSelectedTabListener.selectLastSelectedTab();
-                }
-            })
-            .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    getActivity().finish();
-                }
-            });
+                .setCancelable(false)
+                .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        onSelectLastSelectedTabListener.selectLastSelectedTab();
+                    }
+                })
+                .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getActivity().finish();
+                    }
+                });
         AlertDialog alert = builder.create();
         alert.show();
     }
