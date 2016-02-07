@@ -1,7 +1,7 @@
 package com.example.beuth.taskql;
 
 /**
- * Created by domar007 on 04.02.2016.
+ * @author Wael Gabsi, Stefan Völkel
  */
 public interface OnSelectLastSelectedTabListener {
     public void selectLastSelectedTab();

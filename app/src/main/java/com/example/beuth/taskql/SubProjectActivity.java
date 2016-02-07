@@ -13,8 +13,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import com.example.beuth.tasql.R;
-
-
+/**
+ * @author Wael Gabsi, Stefan Völkel
+ */
 public class SubProjectActivity extends AppCompatActivity implements OnSelectLastSelectedTabListener {
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private List<JSONObject> subProjects = new ArrayList<JSONObject>();

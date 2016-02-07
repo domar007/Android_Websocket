@@ -2,7 +2,7 @@
     <string name="app_name">taskQL</string>
     <string name="title_activity_login">Sign in</string>
     <string name="title_project_activity">Projekte</string>
-    <string name="title_sub_project_activity">Unterprojekte</string>
+    <string name="title_sub_project_activity">Teilprojekte</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

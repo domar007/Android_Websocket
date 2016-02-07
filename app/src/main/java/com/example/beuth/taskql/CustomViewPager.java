@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 /**
- * Created by waelgabsi on 21.01.16.
+ * @author Wael Gabsi, Stefan Völkel
  */
 public class CustomViewPager extends android.support.v4.view.ViewPager{
     private boolean enabled;

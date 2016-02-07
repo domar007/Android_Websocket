@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.example.beuth.tasql.R;
 
 /**
- * Created by waelgabsi on 07.02.16.
+ * @author Wael Gabsi, Stefan Völkel
  */
 public class CustomNavRow extends ArrayAdapter<String> {
 

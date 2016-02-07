@@ -2,8 +2,8 @@ package com.example.beuth.taskql;
 
 import android.app.Application;
 
-/**
- * Created by Stefan Völkel on 26.01.2016.
+/** Application class to use session id globally in the application
+ * @author Wael Gabsi, Stefan Völkel
  */
 public class SessionId extends Application
 {

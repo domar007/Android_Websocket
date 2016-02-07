@@ -19,17 +19,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.example.beuth.tasql.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author Wael Gabsi, Stefan Völkel
+ */
 public class ProjectActivity extends AppCompatActivity {
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     public static final String PREFS_NAME = "LoginPrefs";
@@ -89,6 +88,9 @@ public class ProjectActivity extends AppCompatActivity {
         getProjectsTask.execute();
     }
 
+    /**
+     * Async task to get all projects
+     */
     private class GetProjectsTask extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {

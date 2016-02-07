@@ -21,9 +21,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import com.example.beuth.tasql.R;
 /**
- * Created by waelgabsi on 05.01.16.
+ * @author Wael Gabsi, Stefan Völkel
  */
-
 public class TabSubProject extends Fragment {
     private final static String NANOME_SESSIONID = "nanomeSessionId";
     private SaveSubProjectTask saveSubProjectTask;
@@ -182,16 +181,17 @@ public class TabSubProject extends Fragment {
      */
     protected void showDialogOnDeletedSubProject() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Das Teilprojekt wurde gelöscht.")
+        builder.setTitle("Das Teilprojekt wurde gelöscht.");
+        builder.setMessage("Möchten Sie die Teilprojekte neu laden?")
                 .setCancelable(false)
-                .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
+                .setPositiveButton("JA", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent intent = getActivity().getIntent();
                         getActivity().finish();
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
+                .setNegativeButton("NEIN", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         getActivity().finish();
                     }
@@ -205,14 +205,15 @@ public class TabSubProject extends Fragment {
      */
     protected void showDialogOnLockIdChanged() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Fehler beim Speichern des Teilprojekts.")
+        builder.setTitle("Fehler beim Speichern des Teilprojekts.");
+        builder.setMessage("Möchten Sie das Teilprojekt neu laden?")
                 .setCancelable(false)
-                .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
+                .setPositiveButton("JA", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         onSelectLastSelectedTabListener.selectLastSelectedTab();
                     }
                 })
-                .setNegativeButton("Beenden", new DialogInterface.OnClickListener() {
+                .setNegativeButton("NEIN", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         getActivity().finish();
                     }
@@ -221,12 +222,20 @@ public class TabSubProject extends Fragment {
         alert.show();
     }
 
+    /**
+     * Change tab text
+     * @param text
+     */
     public void changeTabText(String text) {
         changeText = false;
         field.setText(text);
         changeText = true;
     }
 
+    /**
+     * Set lockId of current selected tab
+     * @param lockId
+     */
     public void setLockId(String lockId) {
         Bundle args = getArguments();
         args.putString("subProjectLockId", lockId);

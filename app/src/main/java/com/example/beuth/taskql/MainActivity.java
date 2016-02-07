@@ -13,9 +13,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.example.beuth.tasql.R;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -26,7 +24,6 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -34,6 +31,9 @@ import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * @author Wael Gabsi, Stefan Völkel
+ */
 public class MainActivity extends Activity {
 
     private EditText editText;

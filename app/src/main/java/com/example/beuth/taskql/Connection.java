@@ -8,7 +8,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * Created by Stefan Völkel on 06.02.2016.
+ * @author Wael Gabsi, Stefan Völkel
  */
 public class Connection {
     private OkHttpClient client;

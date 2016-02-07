@@ -18,18 +18,14 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.example.beuth.tasql.R;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 
 
 /**
- *
- * A login screen that offers login via email/password.
+ * @author Wael Gabsi, Stefan Völkel
  */
 public class LoginActivity extends Activity {
     public static final String PREFS_NAME = "LoginPrefs";

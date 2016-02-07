@@ -4,8 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class which has Utility methods
- * 
+ * Utility class methods
+ * @author Wael Gabsi, Stefan Völkel
  */
 public class Utility {
 	private static Pattern pattern;

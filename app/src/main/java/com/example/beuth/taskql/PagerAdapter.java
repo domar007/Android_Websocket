@@ -1,20 +1,15 @@
 package com.example.beuth.taskql;
-
-/**
- * Created by waelgabsi on 05.01.16.
- */
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author Wael Gabsi, Stefan Völkel
+ */
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
     List<Fragment> fragments;
