@@ -1,5 +1,7 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
+        parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">20sp</item>
     </style>
+
 </resources>

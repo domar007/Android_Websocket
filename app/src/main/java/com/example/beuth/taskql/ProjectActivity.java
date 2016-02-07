@@ -136,8 +136,18 @@ public class ProjectActivity extends AppCompatActivity {
 
     private void addDrawerItems() {
         osArray = new String[]{"Abmelden", "Impressum"};
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-        mDrawerList.setAdapter(mAdapter);
+        Integer[] imageId = {
+                R.drawable.logouticon,
+                R.drawable.info
+
+
+        };
+       // mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+       // mAdapter = new ArrayAdapter<String>(this, R.layout.navrow, R.id.Itemname,osArray);
+        CustomNavRow adapter = new
+                CustomNavRow(ProjectActivity.this, osArray, imageId);
+
+        mDrawerList.setAdapter(adapter);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
