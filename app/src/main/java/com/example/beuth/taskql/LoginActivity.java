@@ -46,7 +46,7 @@ public class LoginActivity extends Activity {
 
 
         nanomeSessionId = SessionId.getInstance();
-        connection = new Connection();
+        connection = new Connection(getApplicationContext());
 
         setContentView(R.layout.activity_login);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -211,7 +211,7 @@ public class LoginActivity extends Activity {
             try {
                 json.put("username", mEmail);
                 json.put("password", mPassword);
-                serverResponse = connection.doPostRequestWithAdditionalData("http://beta.taskql.com/rest/api/1/taskql/login", json.toString());
+                serverResponse = connection.doPostRequestWithAdditionalData("https://beta.taskql.com/rest/api/1/taskql/login", json.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {

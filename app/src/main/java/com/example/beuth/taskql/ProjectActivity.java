@@ -57,7 +57,7 @@ public class ProjectActivity extends AppCompatActivity {
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 
-        connection = new Connection();
+        connection = new Connection(getApplicationContext());
         mActivityTitle = getTitle().toString();
         builder = new AlertDialog.Builder(this);
 
@@ -97,7 +97,7 @@ public class ProjectActivity extends AppCompatActivity {
             String sessionId = nanomeSessionId.getSessionId();
             String serverResponse = null;
             try {
-                serverResponse = connection.doPostRequestWithAdditionalHeader("http://beta.taskql.com/rest/api/1/project/getAll", NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalHeader("https://beta.taskql.com/rest/api/1/project/getAll", NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -169,7 +169,7 @@ public class ProjectActivity extends AppCompatActivity {
 
                                     }
                                 })
-                                .setNegativeButton("Nein", null)						//Do nothing on no
+                                .setNegativeButton("Nein", null)
                                 .show();
 
                         break;

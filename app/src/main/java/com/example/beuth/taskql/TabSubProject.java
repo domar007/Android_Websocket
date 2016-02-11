@@ -40,7 +40,7 @@ public class TabSubProject extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
-        connection = new Connection();
+        connection = new Connection(getContext());
         field = (EditText) view.findViewById(R.id.task_textfield);
         sessionId = SessionId.getInstance();
         timer = new Timer();
@@ -141,7 +141,7 @@ public class TabSubProject extends Fragment {
                 json.put("idex", idEx);
                 json.put("lockid", lockId);
                 json.put("text", text);
-                serverResponse = connection.doPostRequestWithAdditionalDataAndHeader("http://beta.taskql.com/rest/api/1/projectpart/write", json.toString(), NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalDataAndHeader("https://beta.taskql.com/rest/api/1/projectpart/write", json.toString(), NANOME_SESSIONID + "=" + sessionId);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {

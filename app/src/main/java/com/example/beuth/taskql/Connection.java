@@ -1,6 +1,20 @@
 package com.example.beuth.taskql;
 
+import android.content.Context;
+import com.example.beuth.tasql.R;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+import okhttp3.ConnectionSpec;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -8,14 +22,67 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
+ * Connection class
  * @author Wael Gabsi, Stefan Völkel
  */
 public class Connection {
     private OkHttpClient client;
+    private ConnectionSpec spec;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    Connection(){
-        this.client = new OkHttpClient();
+    Connection(Context context){
+        client = new OkHttpClient.Builder().sslSocketFactory(getSslSocketFactory(context)).build();
+    }
+
+    /**
+     * Create custom trusted ssl socket factory
+     * @param context
+     * @return
+     */
+    private SSLSocketFactory getSslSocketFactory(Context context) {
+        try {
+            // Load CAs from an InputStream
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            InputStream caInput = context.getResources().openRawResource(R.raw.cax3);
+            Certificate ca = null;
+            try {
+                ca = cf.generateCertificate(caInput);
+            } catch (CertificateException e) {
+                e.printStackTrace();
+            } finally {
+                caInput.close();
+            }
+
+            // Create a KeyStore containing our trusted CAs
+            String keyStoreType = KeyStore.getDefaultType();
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+            keyStore.load(null, null);
+            if (ca == null)
+                return null;
+            keyStore.setCertificateEntry("ca", ca);
+
+            // Create a TrustManager that trusts the CAs in our KeyStore
+            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+            tmf.init(keyStore);
+
+            // Create an SSLContext that uses our TrustManager
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+
+            return sslContext.getSocketFactory();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

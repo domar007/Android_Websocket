@@ -35,7 +35,7 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
         setContentView(R.layout.subactivity);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         nanomeSessionId = SessionId.getInstance();
-        connection = new Connection();
+        connection = new Connection(getApplicationContext());
         selectedTabPosition = -1;
 
         Bundle extras = getIntent().getExtras();
@@ -142,7 +142,7 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
             String sessionId = nanomeSessionId.getSessionId();
             String serverResponse = null;
             try {
-                serverResponse = connection.doPostRequestWithAdditionalHeader("http://beta.taskql.com/rest/api/1/project/getInfoByProjectId?objectid=" + projectId, NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalHeader("https://beta.taskql.com/rest/api/1/project/getInfoByProjectId?objectid=" + projectId, NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -228,7 +228,7 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
             String sessionId = nanomeSessionId.getSessionId();
             String serverResponse = null;
             try {
-                serverResponse = connection.doPostRequestWithAdditionalHeader("http://beta.taskql.com/rest/api/1/projectpart/getInfoByIdEx/" + idEx, NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalHeader("https://beta.taskql.com/rest/api/1/projectpart/getInfoByIdEx/" + idEx, NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
