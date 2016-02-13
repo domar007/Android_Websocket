@@ -10,9 +10,9 @@
         android:label="@string/app_name"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:name="com.example.beuth.taskql.SessionId"
+        android:name="com.example.beuth.taskql.helperClasses.ApplicationParameters"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.beuth.taskql.LoginActivity"
+        <activity android:name="com.example.beuth.taskql.activities.LoginActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,16 +20,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.beuth.taskql.MainActivity" />
+        <activity android:name="com.example.beuth.taskql.activities.MainActivity" />
         <activity
-        android:name="com.example.beuth.taskql.ProjectActivity" android:label="@string/title_project_activity" >
+        android:name="com.example.beuth.taskql.activities.ProjectActivity" android:label="@string/title_project_activity" >
 
         </activity>
 
-        <activity android:name="com.example.beuth.taskql.SubProjectActivity" android:label="@string/title_sub_project_activity" android:parentActivityName="com.example.beuth.taskql.ProjectActivity" android:configChanges="orientation|screenSize">
+        <activity android:name="com.example.beuth.taskql.activities.SubProjectActivity" android:label="@string/title_sub_project_activity" android:parentActivityName="com.example.beuth.taskql.activities.ProjectActivity" android:configChanges="orientation|screenSize">
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value="com.example.beuth.taskql.ProjectActivity" >
+            android:value="com.example.beuth.taskql.activities.ProjectActivity" >
         </meta-data>
         </activity>
     </application>

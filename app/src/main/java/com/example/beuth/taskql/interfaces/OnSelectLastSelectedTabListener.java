@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.interfaces;
 
 /**
  * @author Wael Gabsi, Stefan Völkel

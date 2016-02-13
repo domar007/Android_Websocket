@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.activities;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import com.example.beuth.taskql.interfaces.OnSelectLastSelectedTabListener;
+import com.example.beuth.taskql.viewClasses.TabSubProject;
+import com.example.beuth.taskql.helperClasses.Connection;
+import com.example.beuth.taskql.helperClasses.ApplicationParameters;
+import com.example.beuth.taskql.viewClasses.CustomViewPager;
+import com.example.beuth.taskql.viewClasses.PagerAdapter;
 import com.example.beuth.tasql.R;
 /**
  * @author Wael Gabsi, Stefan Völkel
@@ -24,7 +30,7 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
     private Connection connection;
     private int subProjectsLength, selectedTabPosition;
     private GetSubProjectsTask getSubProjectsTask;
-    private SessionId nanomeSessionId;
+    private ApplicationParameters applicationParameters;
     String projectId;
     TabLayout tabLayout;
 
@@ -34,7 +40,7 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subactivity);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        nanomeSessionId = SessionId.getInstance();
+        applicationParameters = ApplicationParameters.getInstance();
         connection = new Connection(getApplicationContext());
         selectedTabPosition = -1;
 
@@ -139,10 +145,10 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
 
         protected String doInBackground(String... params) {
             String projectId = params[0];
-            String sessionId = nanomeSessionId.getSessionId();
+            String sessionId = applicationParameters.getSessionId();
             String serverResponse = null;
             try {
-                serverResponse = connection.doPostRequestWithAdditionalHeader("https://beta.taskql.com/rest/api/1/project/getInfoByProjectId?objectid=" + projectId, NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalHeader("https://" + applicationParameters.getServerUrl() + "/rest/api/1/project/getInfoByProjectId?objectid=" + projectId, NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -225,10 +231,10 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
         protected String doInBackground(String... params) {
 
 
-            String sessionId = nanomeSessionId.getSessionId();
+            String sessionId = applicationParameters.getSessionId();
             String serverResponse = null;
             try {
-                serverResponse = connection.doPostRequestWithAdditionalHeader("https://beta.taskql.com/rest/api/1/projectpart/getInfoByIdEx/" + idEx, NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalHeader("https://" + applicationParameters.getServerUrl() + "/rest/api/1/projectpart/getInfoByIdEx/" + idEx, NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,16 +1,17 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.helperClasses;
 
 import android.app.Application;
 
 /** Application class to use session id globally in the application
  * @author Wael Gabsi, Stefan Völkel
  */
-public class SessionId extends Application
+public class ApplicationParameters extends Application
 {
     private String sessionId;
-    private static SessionId singleInstance = null;
+    private String serverUrl;
+    private static ApplicationParameters singleInstance = null;
 
-    public static SessionId getInstance()
+    public static ApplicationParameters getInstance()
     {
         return singleInstance;
     }
@@ -27,5 +28,13 @@ public class SessionId extends Application
 
     public String getSessionId() {
         return this.sessionId;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.viewClasses;
 
 import android.content.Context;
 import android.util.AttributeSet;

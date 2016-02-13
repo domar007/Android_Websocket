@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.helperClasses;
 
 import android.content.Context;
 import com.example.beuth.tasql.R;
@@ -12,9 +12,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-import okhttp3.ConnectionSpec;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,19 +25,18 @@ import okhttp3.Response;
  */
 public class Connection {
     private OkHttpClient client;
-    private ConnectionSpec spec;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    Connection(Context context){
-        client = new OkHttpClient.Builder().sslSocketFactory(getSslSocketFactory(context)).build();
+    public Connection(Context context){
+        this.client = getCustomTrustedClient(context);
     }
 
     /**
-     * Create custom trusted ssl socket factory
+     * Create custom trusted OkHttpClient
      * @param context
      * @return
      */
-    private SSLSocketFactory getSslSocketFactory(Context context) {
+    private OkHttpClient getCustomTrustedClient(Context context) {
         try {
             // Load CAs from an InputStream
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -70,7 +67,9 @@ public class Connection {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, tmf.getTrustManagers(), null);
 
-            return sslContext.getSocketFactory();
+            // return OkhttpClient
+            OkHttpClient client = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory()).build();
+            return client;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (IOException e) {

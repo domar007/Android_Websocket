@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.viewClasses;
 
 
 import android.app.AlertDialog;
@@ -19,6 +19,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.example.beuth.taskql.interfaces.OnSelectLastSelectedTabListener;
+import com.example.beuth.taskql.helperClasses.Connection;
+import com.example.beuth.taskql.helperClasses.ApplicationParameters;
 import com.example.beuth.tasql.R;
 /**
  * @author Wael Gabsi, Stefan Völkel
@@ -28,7 +32,7 @@ public class TabSubProject extends Fragment {
     private SaveSubProjectTask saveSubProjectTask;
     private Connection connection;
     private OnSelectLastSelectedTabListener onSelectLastSelectedTabListener;
-    private SessionId sessionId;
+    private ApplicationParameters applicationParameters;
     private Bundle args;
     private Timer timer;
     private String idEx, lockId;
@@ -42,7 +46,7 @@ public class TabSubProject extends Fragment {
         View view = inflater.inflate(R.layout.tab_subproject, container, false);
         connection = new Connection(getContext());
         field = (EditText) view.findViewById(R.id.task_textfield);
-        sessionId = SessionId.getInstance();
+        applicationParameters = ApplicationParameters.getInstance();
         timer = new Timer();
         args = getArguments();
         String text =  args.getString("subProjectText");
@@ -88,7 +92,7 @@ public class TabSubProject extends Fragment {
                 if (changeText) {
                     onSelectLastSelectedTabListener.addEditedTabPosition(onSelectLastSelectedTabListener.getSelectedTabPosition());
                     onSelectLastSelectedTabListener.selectLastSelectedTabText();
-                    params = new String[]{sessionId.getSessionId(), lockId, idEx, field.getText().toString()};
+                    params = new String[]{applicationParameters.getSessionId(), lockId, idEx, field.getText().toString()};
                     timer.cancel();
                     timer = new Timer();
                     timer.schedule(new TimerTask() {
@@ -141,7 +145,7 @@ public class TabSubProject extends Fragment {
                 json.put("idex", idEx);
                 json.put("lockid", lockId);
                 json.put("text", text);
-                serverResponse = connection.doPostRequestWithAdditionalDataAndHeader("https://beta.taskql.com/rest/api/1/projectpart/write", json.toString(), NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalDataAndHeader("https://" + applicationParameters.getServerUrl() + "/rest/api/1/projectpart/write", json.toString(), NANOME_SESSIONID + "=" + sessionId);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -179,7 +183,7 @@ public class TabSubProject extends Fragment {
     /**
      * Show dialog when an subProject was deleted
      */
-    protected void showDialogOnDeletedSubProject() {
+    public void showDialogOnDeletedSubProject() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Das Teilprojekt wurde gelöscht.");
         builder.setMessage("Möchten Sie die Teilprojekte neu laden?")
@@ -203,7 +207,7 @@ public class TabSubProject extends Fragment {
     /**
      * Show dialog when lockId has changed
      */
-    protected void showDialogOnLockIdChanged() {
+    public void showDialogOnLockIdChanged() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Fehler beim Speichern des Teilprojekts.");
         builder.setMessage("Möchten Sie das Teilprojekt neu laden?")

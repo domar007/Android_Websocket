@@ -1,8 +1,7 @@
 /**
  * Created by waelgabsi on 26.11.15.
  */
-package com.example.beuth.taskql;
-
+package com.example.beuth.taskql.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +18,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.example.beuth.taskql.helperClasses.Connection;
+import com.example.beuth.taskql.helperClasses.ApplicationParameters;
+import com.example.beuth.taskql.viewClasses.CustomNavRow;
 import com.example.beuth.tasql.R;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,8 +40,7 @@ public class ProjectActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private GetProjectsTask getProjectsTask;
     private ListView listView;
-    private SessionId nanomeSessionId;
-    String username;
+    private ApplicationParameters applicationParameters;
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private ArrayAdapter<String> mAdapter;
@@ -53,24 +54,16 @@ public class ProjectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
         listView = (ListView) findViewById(R.id.projectListView);
-        nanomeSessionId = SessionId.getInstance();
+        applicationParameters = ApplicationParameters.getInstance();
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-
         connection = new Connection(getApplicationContext());
         mActivityTitle = getTitle().toString();
         builder = new AlertDialog.Builder(this);
-
         addDrawerItems();
         setupDrawer();
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-        Bundle extras = getIntent().getExtras();
-        if(extras != null) {
-            username = extras.getString("username");
-        }
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, projectNames);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -89,15 +82,15 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     /**
-     * Async task to get all projects
+     * Async task to get all taskql projects
      */
     private class GetProjectsTask extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
-            String sessionId = nanomeSessionId.getSessionId();
+            String sessionId = applicationParameters.getSessionId();
             String serverResponse = null;
             try {
-                serverResponse = connection.doPostRequestWithAdditionalHeader("https://beta.taskql.com/rest/api/1/project/getAll", NANOME_SESSIONID + "=" + sessionId);
+                serverResponse = connection.doPostRequestWithAdditionalHeader("https://" + applicationParameters.getServerUrl() + "/rest/api/1/project/getAll", NANOME_SESSIONID + "=" + sessionId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -129,7 +122,6 @@ public class ProjectActivity extends AppCompatActivity {
     private void navigateToSubProjectActivity(String projectId){
         Intent subProjectIntent = new Intent(getApplicationContext(),SubProjectActivity.class);
         subProjectIntent.putExtra("projectId", projectId);
-        subProjectIntent.putExtra("username", username);
         subProjectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(subProjectIntent);
     }

@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.activities;
 
 import android.app.Activity;
 import android.graphics.Color;

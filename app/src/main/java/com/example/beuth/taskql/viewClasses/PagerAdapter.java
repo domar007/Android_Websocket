@@ -1,8 +1,9 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.viewClasses;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;

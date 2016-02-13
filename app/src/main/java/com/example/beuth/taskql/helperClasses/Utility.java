@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.helperClasses;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

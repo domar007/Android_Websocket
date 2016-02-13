@@ -1,4 +1,4 @@
-package com.example.beuth.taskql;
+package com.example.beuth.taskql.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -18,6 +18,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.example.beuth.taskql.helperClasses.Connection;
+import com.example.beuth.taskql.helperClasses.ApplicationParameters;
+import com.example.beuth.taskql.helperClasses.Utility;
 import com.example.beuth.tasql.R;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,11 +36,12 @@ public class LoginActivity extends Activity {
 
 
     private Connection connection;
-    private SessionId nanomeSessionId;
+    private ApplicationParameters applicationParameters;
     private UserLoginTask mAuthTask = null;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mServerView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -45,12 +50,16 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
 
 
-        nanomeSessionId = SessionId.getInstance();
+        applicationParameters = ApplicationParameters.getInstance();
         connection = new Connection(getApplicationContext());
 
         setContentView(R.layout.activity_login);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
+        mServerView = (EditText) findViewById(R.id.serverUrl);
+
+        // set predefined server url
+        mServerView.setText("beta.taskql.com");
 
         // get the shared preferences to know if the user open the app for the first time
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -58,10 +67,11 @@ public class LoginActivity extends Activity {
 
             String username = settings.getString("username", "").toString();
             String password =  settings.getString("password", "").toString();
+            String serverUrl = settings.getString("serverUrl", "").toString();
 
-            mAuthTask = new UserLoginTask(username, password);
+            mAuthTask = new UserLoginTask(username, password, serverUrl);
             mAuthTask.execute((Void) null);
-            nanomeSessionId.setSessionId(settings.getString("SSID", ""));
+            applicationParameters.setSessionId(settings.getString("SSID", ""));
 
 
             Intent intent = new Intent(LoginActivity.this, ProjectActivity.class);
@@ -107,10 +117,12 @@ public class LoginActivity extends Activity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mServerView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String serverUrl = mServerView.getText().toString();
         boolean cancel = false;
         View focusView = null;
 
@@ -132,6 +144,12 @@ public class LoginActivity extends Activity {
             cancel = true;
         }
 
+        if (TextUtils.isEmpty(serverUrl)) {
+            mServerView.setError(getString(R.string.error_field_required));
+            focusView = mServerView;
+            cancel = true;
+        }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -140,7 +158,7 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(email, password, serverUrl);
             mAuthTask.execute((Void) null);
         }
     }
@@ -198,10 +216,12 @@ public class LoginActivity extends Activity {
 
         private final String mEmail;
         private final String mPassword;
+        private final String mServerUrl;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, String serverUrl) {
             mEmail = email;
             mPassword = password;
+            mServerUrl = serverUrl;
         }
 
         @Override
@@ -211,7 +231,7 @@ public class LoginActivity extends Activity {
             try {
                 json.put("username", mEmail);
                 json.put("password", mPassword);
-                serverResponse = connection.doPostRequestWithAdditionalData("https://beta.taskql.com/rest/api/1/taskql/login", json.toString());
+                serverResponse = connection.doPostRequestWithAdditionalData("https://" + mServerUrl + "/rest/api/1/taskql/login", json.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -240,13 +260,13 @@ public class LoginActivity extends Activity {
                     SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putString("logged", "logged");
-
-
-                    nanomeSessionId.setSessionId(sessionId);
-                    editor.putString("SSID", nanomeSessionId.getSessionId());
+                    applicationParameters.setSessionId(sessionId);
+                    editor.putString("SSID", applicationParameters.getSessionId());
                     editor.putString("username", mEmail);
                     editor.putString("password", mPassword);
+                    editor.putString("serverUrl", mServerView.getText().toString());
                     editor.commit();
+                    applicationParameters.setServerUrl(mServerView.getText().toString());
                     navigateToHomeActivity();
                 }
                 else {
