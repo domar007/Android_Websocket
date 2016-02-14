@@ -15,9 +15,8 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="error_unknown_host">Unknown host</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing emailcompletions."</string>
 
     <!-- Strings related to TabSubProject -->
     <string name="dialog_on_deleted_sub_project_title">Das Teilprojekt wurde gelöscht.</string>

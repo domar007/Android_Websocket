@@ -19,7 +19,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.example.beuth.taskql.helperClasses.Connection;
 import com.example.beuth.taskql.helperClasses.ApplicationParameters;
 import com.example.beuth.taskql.helperClasses.Utility;
@@ -234,11 +233,12 @@ public class LoginActivity extends Activity {
         private final String mEmail;
         private final String mPassword;
         private final String mServerUrl;
+        private String errorUnknownHost = null;
 
         UserLoginTask(String email, String password, String serverUrl) {
-            mEmail = email;
-            mPassword = password;
-            mServerUrl = serverUrl;
+            this.mEmail = email;
+            this.mPassword = password;
+            this.mServerUrl = serverUrl;
         }
 
         @Override
@@ -253,6 +253,7 @@ public class LoginActivity extends Activity {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+                this.errorUnknownHost = getString(R.string.error_unknown_host);
             }
             return serverResponse;
             //	return text;
@@ -260,7 +261,11 @@ public class LoginActivity extends Activity {
 
         @Override
         protected void onPostExecute(final String results) {
-            if (results!=null) {
+            if (this.errorUnknownHost != null) {
+                mServerView.setError(this.errorUnknownHost);
+                mServerView.requestFocus();
+            }
+            if (results != null) {
                 JSONObject arr = null;
                 String errorCode = null;
                 String sessionId = null;
