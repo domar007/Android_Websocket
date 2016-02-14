@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,7 +19,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.example.beuth.taskql.helperClasses.Connection;
 import com.example.beuth.taskql.helperClasses.ApplicationParameters;
 import com.example.beuth.taskql.helperClasses.Utility;
@@ -33,13 +34,12 @@ import java.io.IOException;
  */
 public class LoginActivity extends Activity {
     public static final String PREFS_NAME = "LoginPrefs";
-
-
     private Connection connection;
     private ApplicationParameters applicationParameters;
     private UserLoginTask mAuthTask = null;
     // UI references.
     private AutoCompleteTextView mEmailView;
+    private Button mEmailSignInButton;
     private EditText mPasswordView;
     private EditText mServerView;
     private View mProgressView;
@@ -48,11 +48,8 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         applicationParameters = ApplicationParameters.getInstance();
         connection = new Connection(getApplicationContext());
-
         setContentView(R.layout.activity_login);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -63,22 +60,25 @@ public class LoginActivity extends Activity {
 
         // get the shared preferences to know if the user open the app for the first time
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        if (settings.getString("logged", "").toString().equals("logged")) {
+        // check network status
+        if (connection.isNetworkAvailable()) {
+            if (settings.getString("logged", "").toString().equals("logged")) {
+                String username = settings.getString("username", "").toString();
+                String password =  settings.getString("password", "").toString();
+                String serverUrl = settings.getString("serverUrl", "").toString();
 
-            String username = settings.getString("username", "").toString();
-            String password =  settings.getString("password", "").toString();
-            String serverUrl = settings.getString("serverUrl", "").toString();
+                mAuthTask = new UserLoginTask(username, password, serverUrl);
+                mAuthTask.execute((Void) null);
+                applicationParameters.setSessionId(settings.getString("SSID", ""));
 
-            mAuthTask = new UserLoginTask(username, password, serverUrl);
-            mAuthTask.execute((Void) null);
-            applicationParameters.setSessionId(settings.getString("SSID", ""));
-
-
-            Intent intent = new Intent(LoginActivity.this, ProjectActivity.class);
-            intent.putExtra("username", username);
-            startActivity(intent);
-            finish();
+                Intent intent = new Intent(LoginActivity.this, ProjectActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        } else {
+            Utility.displayToast(getApplicationContext(), getString(R.string.no_connection));
         }
+
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -91,7 +91,13 @@ public class LoginActivity extends Activity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        if (connection.isNetworkAvailable()) {
+            mEmailSignInButton.setEnabled(true);
+        } else {
+            mEmailSignInButton.setEnabled(false);
+            Log.e("Toast", "Toast");
+        }
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,6 +108,17 @@ public class LoginActivity extends Activity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (connection.isNetworkAvailable()) {
+            mEmailSignInButton.setEnabled(true);
+        } else {
+            mEmailSignInButton.setEnabled(false);
+            Utility.displayToast(getApplicationContext(), getString(R.string.no_connection));
+        }
     }
 
     /**

@@ -4,6 +4,7 @@
     <string name="title_project_activity">Projekte</string>
     <string name="title_sub_project_activity">Teilprojekte</string>
 
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -18,8 +19,15 @@
         completions."
     </string>
 
+    <!-- Strings related to TabSubProject -->
+    <string name="dialog_on_deleted_sub_project_title">Das Teilprojekt wurde gelöscht.</string>
+    <string name="dialog_on_deleted_sub_project_message">Möchten Sie die Teilprojekte neu laden?</string>
+    <string name="dialog_on_lock_id_changed_title">Fehler beim Speichern des Teilprojekts.</string>
+    <string name="dialog_on_lock_id_changed_message">Möchten Sie das Teilprojekt neu laden?</string>
+
     <string name="action_settings">Settings</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="no_connection">No Internet Connection</string>
 
 </resources>

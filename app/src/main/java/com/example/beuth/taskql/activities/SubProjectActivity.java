@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.example.beuth.taskql.helperClasses.Utility;
 import com.example.beuth.taskql.interfaces.OnSelectLastSelectedTabListener;
 import com.example.beuth.taskql.viewClasses.TabSubProject;
 import com.example.beuth.taskql.helperClasses.Connection;
@@ -48,7 +50,13 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
         if(extras != null) {
             projectId = extras.getString("projectId");
         }
-        executeGetSubProjectsTask();
+
+        // check network status
+        if (connection.isNetworkAvailable()) {
+            executeGetSubProjectsTask();
+        } else {
+            Utility.navigateToLoginActivity(getApplicationContext(), this);
+        }
     }
 
     @Override
@@ -186,10 +194,13 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
                     public void onTabSelected(TabLayout.Tab tab) {
                         viewPager.setCurrentItem(tab.getPosition());
                         selectedTabPosition = tab.getPosition();
-
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
                         String idEx = fragment.getArguments().getString("idex");
-                        new GetSingleSubProjectTask(fragment, idEx).execute();
+                        if (connection.isNetworkAvailable()) {
+                            new GetSingleSubProjectTask(fragment, idEx).execute();
+                        } else {
+                            Utility.navigateToLoginActivity(getApplicationContext(), SubProjectActivity.this);
+                        }
                     }
 
                     @Override
@@ -203,7 +214,11 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
                         selectedTabPosition = tab.getPosition();
                         TabSubProject fragment = (TabSubProject) adapter.getItem(tab.getPosition());
                         String idEx = fragment.getArguments().getString("idex");
-                        new GetSingleSubProjectTask(fragment, idEx).execute();
+                        if (connection.isNetworkAvailable()) {
+                            new GetSingleSubProjectTask(fragment, idEx).execute();
+                        } else {
+                            Utility.navigateToLoginActivity(getApplicationContext(), SubProjectActivity.this);
+                        }
                     }
                 });
             }

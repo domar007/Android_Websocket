@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.example.beuth.taskql.helperClasses.Utility;
 import com.example.beuth.taskql.interfaces.OnSelectLastSelectedTabListener;
 import com.example.beuth.taskql.helperClasses.Connection;
 import com.example.beuth.taskql.helperClasses.ApplicationParameters;
@@ -98,8 +99,13 @@ public class TabSubProject extends Fragment {
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            saveSubProjectTask = new SaveSubProjectTask();
-                            saveSubProjectTask.execute(params);
+                            if (connection.isNetworkAvailable()) {
+                                saveSubProjectTask = new SaveSubProjectTask();
+                                saveSubProjectTask.execute(params);
+                            } else {
+                                Utility.navigateToLoginActivity(getContext(), getActivity());
+                            }
+
                         }
                     }, 5000);
                 }
@@ -185,8 +191,8 @@ public class TabSubProject extends Fragment {
      */
     public void showDialogOnDeletedSubProject() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Das Teilprojekt wurde gelöscht.");
-        builder.setMessage("Möchten Sie die Teilprojekte neu laden?")
+        builder.setTitle(getString(R.string.dialog_on_deleted_sub_project_title));
+        builder.setMessage(getString(R.string.dialog_on_deleted_sub_project_message))
                 .setCancelable(false)
                 .setPositiveButton("JA", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -209,8 +215,8 @@ public class TabSubProject extends Fragment {
      */
     public void showDialogOnLockIdChanged() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Fehler beim Speichern des Teilprojekts.");
-        builder.setMessage("Möchten Sie das Teilprojekt neu laden?")
+        builder.setTitle(getString(R.string.dialog_on_lock_id_changed_title));
+        builder.setMessage(R.string.dialog_on_lock_id_changed_message)
                 .setCancelable(false)
                 .setPositiveButton("JA", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

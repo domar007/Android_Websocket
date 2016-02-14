@@ -1,6 +1,8 @@
 package com.example.beuth.taskql.helperClasses;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import com.example.beuth.tasql.R;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +27,13 @@ import okhttp3.Response;
  */
 public class Connection {
     private OkHttpClient client;
+    private ConnectivityManager cm;
+    private Context context;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public Connection(Context context){
-        this.client = getCustomTrustedClient(context);
+        this.context = context;
+        this.client = getCustomTrustedClient(this.context);
     }
 
     /**
@@ -134,5 +139,15 @@ public class Connection {
                 .build();
         Response response = client.newCall(request).execute();
         return response.body().string();
+    }
+
+    /**
+     * Checks if the network is available
+     * @return
+     */
+    public Boolean isNetworkAvailable() {
+        cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }
