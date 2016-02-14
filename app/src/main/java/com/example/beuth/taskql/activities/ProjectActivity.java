@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class ProjectActivity extends AppCompatActivity {
     private final static String NANOME_SESSIONID = "nanomeSessionId";
-    public static final String PREFS_NAME = "LoginPrefs";
+    private static final String PREFS_NAME = "LoginPrefs";
     private List<JSONObject> projects = new ArrayList<JSONObject>();
     private List<String> projectNames = new ArrayList<String>();
     private Connection connection;
@@ -82,7 +82,8 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     /**
-     * Async task to get all taskql projects
+     * Represents an asynchronous getProjects task to get all projects from
+     * the logged-in user.
      */
     private class GetProjectsTask extends AsyncTask<String, Void, String> {
 
@@ -146,8 +147,8 @@ public class ProjectActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
                     case 0:
-                            builder.setTitle("Abmelden")
-                                .setMessage("Sind Sie sicher, dass Sie sich abmelden wollen?")
+                            builder.setTitle(getString(R.string.log_out_dialog_title))
+                                .setMessage(getString(R.string.log_out_dialog_message))
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -166,11 +167,7 @@ public class ProjectActivity extends AppCompatActivity {
 
                         break;
                     case 1:
-                        Toast.makeText(ProjectActivity.this, "taskQL Project Management\n" +
-                                "Version 0.99\n" +
-                                "\n" +
-                                "Copyright © 2016 ziemer's informatik\n" +
-                                "All rights reserved.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProjectActivity.this, getString(R.string.impressum), Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         Toast.makeText(ProjectActivity.this, "you didnt clicked", Toast.LENGTH_SHORT).show();

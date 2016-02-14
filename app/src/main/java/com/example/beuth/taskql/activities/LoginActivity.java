@@ -19,7 +19,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.example.beuth.taskql.helperClasses.Connection;
 import com.example.beuth.taskql.helperClasses.ApplicationParameters;
 import com.example.beuth.taskql.helperClasses.Utility;
@@ -284,7 +284,7 @@ public class LoginActivity extends Activity {
                     editor.putString("serverUrl", mServerView.getText().toString());
                     editor.commit();
                     applicationParameters.setServerUrl(mServerView.getText().toString());
-                    navigateToHomeActivity();
+                    navigateToProjectActivity();
                 }
                 else {
                     mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -305,7 +305,7 @@ public class LoginActivity extends Activity {
     /**
      * Method which navigates from Login Activity to Home Activity
      */
-    public void navigateToHomeActivity(){
+    public void navigateToProjectActivity(){
         String username = mEmailView.getText().toString().trim();
         Intent homeIntent = new Intent(getApplicationContext(),ProjectActivity.class);
         homeIntent.putExtra("username", username);

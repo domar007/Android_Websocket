@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import com.example.beuth.taskql.helperClasses.Utility;
 import com.example.beuth.taskql.interfaces.OnSelectLastSelectedTabListener;
 import com.example.beuth.taskql.viewClasses.TabSubProject;
@@ -149,6 +148,10 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
         return tabLayout.getSelectedTabPosition();
     }
 
+    /**
+     * Represents an asynchronous task to get all sub projects from
+     * the previous selected project.
+     */
     private class GetSubProjectsTask extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
@@ -225,6 +228,9 @@ public class SubProjectActivity extends AppCompatActivity implements OnSelectLas
         }
     }
 
+    /**
+     * Represents an asynchronous task to refresh the selected sub project
+     */
     private class GetSingleSubProjectTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog = new ProgressDialog(SubProjectActivity.this);

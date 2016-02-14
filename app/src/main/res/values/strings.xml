@@ -25,6 +25,16 @@
     <string name="dialog_on_lock_id_changed_title">Fehler beim Speichern des Teilprojekts.</string>
     <string name="dialog_on_lock_id_changed_message">Möchten Sie das Teilprojekt neu laden?</string>
 
+    <!-- Strings related to the ProjectActivity -->
+    <string name="log_out_dialog_title">Abmelden</string>
+    <string name="log_out_dialog_message">Sind Sie sicher, dass Sie sich abmelden wollen?</string>
+    <string name="impressum">
+        "taskQL Project Management\n
+        Version 0.99\n\n
+        Copyright © 2016 ziemer's informatik\n
+        All rights reserved."
+    </string>
+
     <string name="action_settings">Settings</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>

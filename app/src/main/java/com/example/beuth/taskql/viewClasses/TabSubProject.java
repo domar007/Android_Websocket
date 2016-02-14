@@ -133,7 +133,7 @@ public class TabSubProject extends Fragment {
     }
 
     /**
-     *  Async Task to save the subProject
+     * Represents an asynchronous task to save the changes made in the sub project
      */
     private class SaveSubProjectTask extends AsyncTask<String[], Void, String> {
 
